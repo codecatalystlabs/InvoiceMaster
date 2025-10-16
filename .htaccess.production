@@ -1,0 +1,81 @@
+# Code Catalyst Labs - Apache Configuration (PRODUCTION)
+
+# Enable Rewrite Engine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # UPDATE THIS: Change to /invoice/ if in subdirectory, or / if in root
+    RewriteBase /invoice/
+    
+    # Security: Block access to sensitive files
+    RewriteRule ^includes/(.*)$ - [F,L]
+    RewriteRule ^vendor/(.*)$ - [F,L]
+    RewriteRule ^composer\.(json|lock)$ - [F,L]
+    RewriteRule ^database\.sql$ - [F,L]
+    RewriteRule ^\.env$ - [F,L]
+    RewriteRule ^debug\.php$ - [F,L]
+    RewriteRule ^test_.*\.php$ - [F,L]
+    RewriteRule ^fix_.*\.php$ - [F,L]
+    RewriteRule ^config\.production\.example\.php$ - [F,L]
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes
+
+# Set default charset
+AddDefaultCharset UTF-8
+
+# Set default file for directory
+DirectoryIndex index.php
+
+# Enable Gzip compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# Browser caching
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType application/pdf "access plus 1 month"
+</IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+    # Prevent clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+    
+    # Prevent MIME sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # Enable XSS protection
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Referrer policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Force HTTPS (uncomment for production)
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# PHP Settings (for PHP 7.x and 8.x)
+<IfModule mod_php.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    php_value memory_limit 256M
+    php_value max_execution_time 300
+    php_flag display_errors Off
+    php_flag log_errors On
+</IfModule>
+
+# Force HTTPS (uncomment for production)
+# <IfModule mod_rewrite.c>
+#     RewriteCond %{HTTPS} off
+#     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# </IfModule>
+

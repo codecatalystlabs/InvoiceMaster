@@ -1,0 +1,307 @@
+/**
+ * Code Catalyst Labs - Custom Styles
+ */
+
+/* General Styles */
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Navbar Enhancements */
+.navbar-brand img {
+    border-radius: 5px;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    transition: all 0.3s ease;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    border-bottom: 2px solid #e9ecef;
+    border-radius: 10px 10px 0 0 !important;
+}
+
+/* Table Styles */
+.table-hover tbody tr:hover {
+    background-color: #f1f3f5;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.table thead th {
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+/* Button Enhancements */
+.btn {
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-sm {
+    padding: 4px 8px;
+    font-size: 0.875rem;
+}
+
+/* Badge Styles */
+.badge {
+    padding: 6px 12px;
+    font-weight: 500;
+    border-radius: 6px;
+}
+
+/* Form Enhancements */
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #495057;
+}
+
+/* Alert Enhancements */
+.alert {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Statistics Cards */
+.card.bg-primary,
+.card.bg-success,
+.card.bg-info,
+.card.bg-warning {
+    border: none;
+    transition: transform 0.3s ease;
+}
+
+.card.bg-primary:hover,
+.card.bg-success:hover,
+.card.bg-info:hover,
+.card.bg-warning:hover {
+    transform: translateY(-5px);
+}
+
+/* Pagination */
+.pagination {
+    margin-top: 20px;
+}
+
+.page-link {
+    border-radius: 6px;
+    margin: 0 3px;
+    color: var(--primary-color);
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Footer Styles */
+footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+footer a {
+    color: #495057;
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: var(--primary-color);
+}
+
+/* Modal Enhancements */
+.modal-content {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    border-bottom: 2px solid #e9ecef;
+    border-radius: 10px 10px 0 0;
+}
+
+.modal-footer {
+    border-top: 1px solid #e9ecef;
+}
+
+/* Dashboard Stats */
+.card.border-success,
+.card.border-warning {
+    border-width: 2px !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .card {
+        margin-bottom: 15px;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .btn {
+        padding: 6px 12px;
+        font-size: 0.875rem;
+    }
+}
+
+/* Login Page */
+.min-vh-100 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Loading Spinner */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.2em;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Print Styles */
+@media print {
+    .navbar, .btn, .card-header, footer, .no-print {
+        display: none !important;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Status Indicators */
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.status-dot.active {
+    background-color: var(--success-color);
+}
+
+.status-dot.inactive {
+    background-color: var(--secondary-color);
+}
+
+/* Utility Classes */
+.text-decoration-none:hover {
+    text-decoration: underline !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.shadow-sm-hover:hover {
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075) !important;
+}
+
+/* Input Group Enhancements */
+.input-group-text {
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+}
+
+/* Code Blocks */
+code {
+    background-color: #f8f9fa;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+/* Progress Bars */
+.progress {
+    height: 20px;
+    border-radius: 10px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+}
+
