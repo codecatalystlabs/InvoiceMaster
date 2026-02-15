@@ -118,11 +118,11 @@ $page_title = 'Login';
                             </p>
                         </div>
                         
-                        <div class="alert alert-info mt-3 small" role="alert">
+                        <!-- <div class="alert alert-info mt-3 small" role="alert">
                             <strong>Demo Login:</strong><br>
                             Username: <code>admin</code><br>
                             Password: <code>admin123</code>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 

@@ -248,3 +248,378 @@ function displayPagination($total_pages, $current_page, $base_url) {
     echo '</ul>';
     echo '</nav>';
 }
+
+/**
+ * Generate Quotation PDF and save to file
+ * @param array $quotation - Quotation data
+ * @param array $items - Quotation items
+ * @param string $output_file - Path to save the PDF file
+ * @return bool - True if successful, false otherwise
+ */
+function generateQuotationPDF($quotation, $items, $output_file) {
+    try {
+        $mpdf = new \Mpdf\Mpdf([
+            'format' => 'A4',
+            'margin_left' => 15,
+            'margin_right' => 15,
+            'margin_top' => 20,
+            'margin_bottom' => 20,
+        ]);
+        
+        // Build HTML content
+        $html = '
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; font-size: 11pt; }
+                .header { margin-bottom: 30px; }
+                .company-logo { text-align: center; margin-bottom: 20px; }
+                .company-name { font-size: 24pt; color: #0d6efd; font-weight: bold; }
+                .company-info { font-size: 9pt; color: #666; }
+                .quotation-title { font-size: 18pt; color: #333; margin: 20px 0; }
+                .info-section { margin-bottom: 20px; }
+                .info-label { font-weight: bold; color: #666; font-size: 9pt; }
+                .info-value { font-size: 10pt; }
+                .items-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                .items-table th { background-color: #0d6efd; color: white; padding: 10px; text-align: left; }
+                .items-table td { padding: 8px; border-bottom: 1px solid #ddd; }
+                .items-table tfoot td { font-weight: bold; padding: 10px; }
+                .total-row { background-color: #e7f1ff; font-size: 12pt; }
+                .status-badge { background-color: #28a745; color: white; padding: 5px 15px; border-radius: 5px; display: inline-block; }
+                .footer { margin-top: 40px; text-align: center; font-size: 9pt; color: #666; border-top: 1px solid #ddd; padding-top: 10px; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <div class="company-logo">
+                    <div class="company-name">' . COMPANY_NAME . '</div>
+                    <div class="company-info">' . COMPANY_ADDRESS . '</div>
+                    <div class="company-info">' . COMPANY_EMAIL . ' | ' . COMPANY_PHONE . '</div>
+                </div>
+            </div>
+            
+            <div class="quotation-title">QUOTATION</div>
+            
+            <table style="width: 100%; margin-bottom: 30px;">
+                <tr>
+                    <td style="width: 50%; vertical-align: top;">
+                        <div class="info-section">
+                            <div class="info-label">FROM:</div>
+                            <div class="info-value">
+                                <strong>' . COMPANY_NAME . '</strong><br>
+                                ' . COMPANY_ADDRESS . '<br>
+                                ' . COMPANY_EMAIL . '<br>
+                                ' . COMPANY_PHONE . '
+                            </div>
+                        </div>
+                    </td>
+                    <td style="width: 50%; vertical-align: top;">
+                        <div class="info-section">
+                            <div class="info-label">TO:</div>
+                            <div class="info-value">
+                                <strong>' . htmlspecialchars($quotation['client_name']) . '</strong><br>';
+        
+        if (!empty($quotation['client_company'])) {
+            $html .= htmlspecialchars($quotation['client_company']) . '<br>';
+        }
+        if (!empty($quotation['client_email'])) {
+            $html .= htmlspecialchars($quotation['client_email']) . '<br>';
+        }
+        if (!empty($quotation['client_phone'])) {
+            $html .= htmlspecialchars($quotation['client_phone']);
+        }
+        
+        $html .= '
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            
+            <table style="width: 100%; margin-bottom: 20px;">
+                <tr>
+                    <td style="width: 50%;">
+                        <div class="info-label">Quotation Number:</div>
+                        <div class="info-value">' . $quotation['quotation_number'] . '</div>
+                    </td>
+                    <td style="width: 50%;">
+                        <div class="info-label">Date:</div>
+                        <div class="info-value">' . formatDate($quotation['date']) . '</div>
+                    </td>
+                </tr>
+            </table>
+            
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th style="width: 45%;">Item Name</th>
+                        <th style="width: 15%; text-align: center;">Quantity</th>
+                        <th style="width: 20%; text-align: right;">Unit Price</th>
+                        <th style="width: 20%; text-align: right;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>';
+        
+        foreach ($items as $item) {
+            $html .= '
+                    <tr>
+                        <td>' . htmlspecialchars($item['item_name']) . '</td>
+                        <td style="text-align: center;">' . $item['qty'] . '</td>
+                        <td style="text-align: right;">' . formatCurrency($item['unit_price']) . '</td>
+                        <td style="text-align: right;">' . formatCurrency($item['total']) . '</td>
+                    </tr>';
+        }
+        
+        $html .= '
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="text-align: right;">Subtotal:</td>
+                        <td style="text-align: right;">' . formatCurrency($quotation['subtotal']) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align: right;">Tax:</td>
+                        <td style="text-align: right;">' . formatCurrency($quotation['tax']) . '</td>
+                    </tr>';
+        
+        if ($quotation['discount'] > 0) {
+            $html .= '
+                    <tr>
+                        <td colspan="3" style="text-align: right;">Discount:</td>
+                        <td style="text-align: right;">-' . formatCurrency($quotation['discount']) . '</td>
+                    </tr>';
+        }
+        
+        $html .= '
+                    <tr class="total-row">
+                        <td colspan="3" style="text-align: right;">TOTAL:</td>
+                        <td style="text-align: right;">' . formatCurrency($quotation['total']) . '</td>
+                    </tr>
+                </tfoot>
+            </table>';
+        
+        if (!empty($quotation['notes'])) {
+            $html .= '
+            <div style="margin-top: 30px;">
+                <div class="info-label">Notes:</div>
+                <div class="info-value">' . nl2br(htmlspecialchars($quotation['notes'])) . '</div>
+            </div>';
+        }
+        
+        $html .= '
+            <div class="footer">
+                Thank you for your business!<br>
+                This quotation is valid for 30 days from the date of issue.
+            </div>
+        </body>
+        </html>';
+        
+        $mpdf->WriteHTML($html);
+        $mpdf->Output($output_file, \Mpdf\Output\Destination::FILE);
+        
+        return true;
+    } catch (\Mpdf\MpdfException $e) {
+        error_log('PDF Generation Error: ' . $e->getMessage());
+        return false;
+    } catch (Exception $e) {
+        error_log('PDF Generation Error: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Generate Invoice PDF and save to file
+ * @param array $invoice - Invoice data
+ * @param array $items - Invoice items
+ * @param string $output_file - Path to save the PDF file
+ * @return bool - True if successful, false otherwise
+ */
+function generateInvoicePDF($invoice, $items, $output_file) {
+    try {
+        $mpdf = new \Mpdf\Mpdf([
+            'format' => 'A4',
+            'margin_left' => 15,
+            'margin_right' => 15,
+            'margin_top' => 20,
+            'margin_bottom' => 20,
+        ]);
+        
+        // Build HTML content
+        $html = '
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; font-size: 11pt; }
+                .header { margin-bottom: 30px; }
+                .company-logo { text-align: center; margin-bottom: 20px; }
+                .company-name { font-size: 24pt; color: #0d6efd; font-weight: bold; }
+                .company-info { font-size: 9pt; color: #666; }
+                .invoice-title { font-size: 18pt; color: #333; margin: 20px 0; }
+                .info-section { margin-bottom: 20px; }
+                .info-label { font-weight: bold; color: #666; font-size: 9pt; }
+                .info-value { font-size: 10pt; }
+                .items-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                .items-table th { background-color: #0d6efd; color: white; padding: 10px; text-align: left; }
+                .items-table td { padding: 8px; border-bottom: 1px solid #ddd; }
+                .items-table tfoot td { font-weight: bold; padding: 10px; }
+                .total-row { background-color: #e7f1ff; font-size: 12pt; }
+                .status-badge { padding: 5px 15px; border-radius: 5px; display: inline-block; font-size: 9pt; }
+                .status-paid { background-color: #28a745; color: white; }
+                .status-unpaid { background-color: #dc3545; color: white; }
+                .status-partial { background-color: #ffc107; color: #000; }
+                .footer { margin-top: 40px; text-align: center; font-size: 9pt; color: #666; border-top: 1px solid #ddd; padding-top: 10px; }
+                .payment-notice { background-color: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 20px 0; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <div class="company-logo">
+                    <div class="company-name">' . COMPANY_NAME . '</div>
+                    <div class="company-info">' . COMPANY_ADDRESS . '</div>
+                    <div class="company-info">' . COMPANY_EMAIL . ' | ' . COMPANY_PHONE . '</div>
+                </div>
+            </div>
+            
+            <div class="invoice-title">INVOICE</div>
+            
+            <table style="width: 100%; margin-bottom: 30px;">
+                <tr>
+                    <td style="width: 50%; vertical-align: top;">
+                        <div class="info-section">
+                            <div class="info-label">FROM:</div>
+                            <div class="info-value">
+                                <strong>' . COMPANY_NAME . '</strong><br>
+                                ' . COMPANY_ADDRESS . '<br>
+                                ' . COMPANY_EMAIL . '<br>
+                                ' . COMPANY_PHONE . '
+                            </div>
+                        </div>
+                    </td>
+                    <td style="width: 50%; vertical-align: top;">
+                        <div class="info-section">
+                            <div class="info-label">TO:</div>
+                            <div class="info-value">
+                                <strong>' . htmlspecialchars($invoice['client_name']) . '</strong><br>';
+        
+        if (!empty($invoice['client_company'])) {
+            $html .= htmlspecialchars($invoice['client_company']) . '<br>';
+        }
+        if (!empty($invoice['client_email'])) {
+            $html .= htmlspecialchars($invoice['client_email']) . '<br>';
+        }
+        if (!empty($invoice['client_phone'])) {
+            $html .= htmlspecialchars($invoice['client_phone']);
+        }
+        
+        $html .= '
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            
+            <table style="width: 100%; margin-bottom: 20px;">
+                <tr>
+                    <td style="width: 33%;">
+                        <div class="info-label">Invoice Number:</div>
+                        <div class="info-value">' . $invoice['invoice_number'] . '</div>
+                    </td>
+                    <td style="width: 33%;">
+                        <div class="info-label">Date:</div>
+                        <div class="info-value">' . formatDate($invoice['date']) . '</div>
+                    </td>
+                    <td style="width: 33%;">
+                        <div class="info-label">Due Date:</div>
+                        <div class="info-value">' . formatDate($invoice['due_date']) . '</div>
+                    </td>
+                </tr>
+            </table>
+            
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th style="width: 45%;">Item Name</th>
+                        <th style="width: 15%; text-align: center;">Quantity</th>
+                        <th style="width: 20%; text-align: right;">Unit Price</th>
+                        <th style="width: 20%; text-align: right;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>';
+        
+        foreach ($items as $item) {
+            $html .= '
+                    <tr>
+                        <td>' . htmlspecialchars($item['item_name']) . '</td>
+                        <td style="text-align: center;">' . $item['qty'] . '</td>
+                        <td style="text-align: right;">' . formatCurrency($item['unit_price']) . '</td>
+                        <td style="text-align: right;">' . formatCurrency($item['total']) . '</td>
+                    </tr>';
+        }
+        
+        $html .= '
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="text-align: right;">Subtotal:</td>
+                        <td style="text-align: right;">' . formatCurrency($invoice['subtotal']) . '</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align: right;">Tax:</td>
+                        <td style="text-align: right;">' . formatCurrency($invoice['tax']) . '</td>
+                    </tr>';
+        
+        if ($invoice['discount'] > 0) {
+            $html .= '
+                    <tr>
+                        <td colspan="3" style="text-align: right;">Discount:</td>
+                        <td style="text-align: right;">-' . formatCurrency($invoice['discount']) . '</td>
+                    </tr>';
+        }
+        
+        $html .= '
+                    <tr class="total-row">
+                        <td colspan="3" style="text-align: right;">TOTAL:</td>
+                        <td style="text-align: right;">' . formatCurrency($invoice['total']) . '</td>
+                    </tr>
+                </tfoot>
+            </table>';
+        
+        // Add payment notice if unpaid or partially paid
+        if ($invoice['status'] !== 'Paid') {
+            $html .= '
+            <div class="payment-notice">
+                <strong>Payment Due:</strong> ' . formatCurrency($invoice['total']) . ' by ' . formatDate($invoice['due_date']) . '<br>
+                Please ensure payment is received by the due date to avoid any late fees.
+            </div>';
+        }
+        
+        if (!empty($invoice['notes'])) {
+            $html .= '
+            <div style="margin-top: 30px;">
+                <div class="info-label">Notes:</div>
+                <div class="info-value">' . nl2br(htmlspecialchars($invoice['notes'])) . '</div>
+            </div>';
+        }
+        
+        $html .= '
+            <div class="footer">
+                Thank you for your business!<br>
+                For any questions about this invoice, please contact us.
+            </div>
+        </body>
+        </html>';
+        
+        $mpdf->WriteHTML($html);
+        $mpdf->Output($output_file, \Mpdf\Output\Destination::FILE);
+        
+        return true;
+    } catch (\Mpdf\MpdfException $e) {
+        error_log('PDF Generation Error: ' . $e->getMessage());
+        return false;
+    } catch (Exception $e) {
+        error_log('PDF Generation Error: ' . $e->getMessage());
+        return false;
+    }
+}

@@ -190,7 +190,7 @@ include '../includes/header.php';
 
 <!-- Email Modal -->
 <div class="modal fade" id="emailModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form method="POST" action="send_email.php">
                 <div class="modal-header">
@@ -201,12 +201,27 @@ include '../includes/header.php';
                     <input type="hidden" name="quotation_id" value="<?php echo $id; ?>">
                     
                     <div class="mb-3">
-                        <label for="email_to" class="form-label">To:</label>
+                        <label for="email_to" class="form-label">To: <span class="text-danger">*</span></label>
                         <input type="email" class="form-control" id="email_to" name="email_to" 
                                value="<?php echo htmlspecialchars($quotation['client_email']); ?>" required>
+                        <small class="form-text text-muted">Primary recipient email address</small>
                     </div>
                     
-                    <div class="alert alert-info small">
+                    <div class="mb-3">
+                        <label for="email_cc" class="form-label">CC: <span class="text-muted">(Optional)</span></label>
+                        <input type="text" class="form-control" id="email_cc" name="email_cc" 
+                               placeholder="email1@example.com, email2@example.com">
+                        <small class="form-text text-muted">Separate multiple emails with commas</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email_bcc" class="form-label">BCC: <span class="text-muted">(Optional)</span></label>
+                        <input type="text" class="form-control" id="email_bcc" name="email_bcc" 
+                               placeholder="email1@example.com, email2@example.com">
+                        <small class="form-text text-muted">Separate multiple emails with commas (hidden from other recipients)</small>
+                    </div>
+                    
+                    <div class="alert alert-info small mb-0">
                         <i class="bi bi-info-circle"></i> The quotation PDF will be attached to the email.
                     </div>
                 </div>

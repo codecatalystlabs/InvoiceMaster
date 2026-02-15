@@ -88,11 +88,11 @@ try {
             <div class="company-logo">';
     
     // Add logo if it exists - use base64 encoding for mPDF (required!)
-    // if (file_exists(LOGO_PATH)) {
-    //     $logo_data = base64_encode(file_get_contents(LOGO_PATH));
-    //     $logo_src = 'data:image/png;base64,' . $logo_data;
-    //     $html .= '<img src="' . $logo_src . '" alt="' . COMPANY_NAME . '" style="height: ' . LOGO_HEIGHT . 'px; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;">';
-    // }
+    if (file_exists(LOGO_PATH)) {
+        $logo_data = base64_encode(file_get_contents(LOGO_PATH));
+        $logo_src = 'data:image/png;base64,' . $logo_data;
+        $html .= '<img src="' . $logo_src . '" alt="' . COMPANY_NAME . '" style="height: ' . LOGO_HEIGHT . 'px; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;">';
+    }
     
     $html .= '
                 <div class="company-name">' . COMPANY_NAME . '</div>

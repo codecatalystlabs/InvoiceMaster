@@ -29,7 +29,7 @@ define('ITEMS_PER_PAGE', 10);
 
 // Company Information
 define('COMPANY_NAME', 'Code Catalyst Labs');
-define('COMPANY_EMAIL', 'info@codecatalystlabs.com');
+define('COMPANY_EMAIL', 'info@codecatalystug.com');
 define('COMPANY_PHONE', '+256 (783) 261162');
 define('COMPANY_ADDRESS', '32 Kanjokya Street, Mug One House, Kamwokya');
 
@@ -47,19 +47,28 @@ define('LOGO_URL', APP_URL . '/assets/logo.png'); // For web pages
 define('LOGO_HEIGHT', 60); // Logo height in pixels for PDFs
 
 // Tax Rate (percentage)
-define('DEFAULT_TAX_RATE', 1);
+define('DEFAULT_TAX_RATE', 0);
 
 // Date Format
 define('DATE_FORMAT', 'Y-m-d');
 define('DISPLAY_DATE_FORMAT', 'M d, Y');
 
-// Email Configuration
-define('SMTP_HOST', 'smtp.gmail.com');
+// Email Configuration (SMTP)
+define('SMTP_HOST', 'mail.codecatalystug.com');
 define('SMTP_PORT', 587);
-define('SMTP_USERNAME', 'your-email@gmail.com');
-define('SMTP_PASSWORD', 'your-app-password');
-define('SMTP_FROM_EMAIL', 'noreply@codecatalystlabs.com');
+define('SMTP_USERNAME', 'info@codecatalystug.com');
+define('SMTP_PASSWORD', 'Cod3C@t@!ystUg');
+define('SMTP_FROM_EMAIL', 'info@codecatalystug.com');
 define('SMTP_FROM_NAME', 'Code Catalyst Labs');
+
+// Email Configuration (IMAP - for receiving replies)
+define('IMAP_ENABLED', false); // Set to true to enable reply tracking
+define('IMAP_HOST', 'mail.codecatalystug.com');
+define('IMAP_PORT', 993);
+define('IMAP_USERNAME', 'info@codecatalystug.com');
+define('IMAP_PASSWORD', 'Cod3C@t@!ystUg');
+define('IMAP_SSL', true);
+define('IMAP_FOLDER', 'INBOX');
 
 // Create database connection
 $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
