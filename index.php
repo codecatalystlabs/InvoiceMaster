@@ -42,6 +42,34 @@ $query = "SELECT SUM(total) as pending FROM invoices WHERE status IN ('Unpaid', 
 $result = mysqli_query($conn, $query);
 $stats['pending_amount'] = mysqli_fetch_assoc($result)['pending'] ?? 0;
 
+// Accounting stats (for Admin and Finance)
+if (hasRole(['Admin', 'Finance'])) {
+    // Total Expenses (Current Month)
+    $query = "SELECT SUM(amount) as total FROM expenses WHERE MONTH(expense_date) = MONTH(CURRENT_DATE()) AND YEAR(expense_date) = YEAR(CURRENT_DATE())";
+    $result = mysqli_query($conn, $query);
+    $stats['monthly_expenses'] = mysqli_fetch_assoc($result)['total'] ?? 0;
+    
+    // Total Asset Value
+    $query = "SELECT SUM(current_value) as total FROM assets";
+    $result = mysqli_query($conn, $query);
+    $stats['total_assets'] = mysqli_fetch_assoc($result)['total'] ?? 0;
+    
+    // Active Services Count
+    $query = "SELECT COUNT(*) as total FROM services WHERE status = 'Active'";
+    $result = mysqli_query($conn, $query);
+    $stats['active_services'] = mysqli_fetch_assoc($result)['total'] ?? 0;
+    
+    // Cashbook Balance (Current Month)
+    $query = "SELECT 
+                SUM(CASE WHEN transaction_type = 'Income' THEN amount ELSE 0 END) as income,
+                SUM(CASE WHEN transaction_type = 'Expense' THEN amount ELSE 0 END) as expense
+              FROM cashbook 
+              WHERE MONTH(transaction_date) = MONTH(CURRENT_DATE()) AND YEAR(transaction_date) = YEAR(CURRENT_DATE())";
+    $result = mysqli_query($conn, $query);
+    $cashflow = mysqli_fetch_assoc($result);
+    $stats['net_cashflow'] = ($cashflow['income'] ?? 0) - ($cashflow['expense'] ?? 0);
+}
+
 // Recent Quotations
 $query = "SELECT q.*, c.name as client_name 
           FROM quotations q 
@@ -186,6 +214,73 @@ include 'includes/header.php';
             </div>
         </div>
     </div>
+    
+    <?php if (hasRole(['Admin', 'Finance'])): ?>
+    <!-- Accounting Metrics -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-danger">
+                <div class="card-body">
+                    <h6 class="text-danger"><i class="bi bi-receipt-cutoff"></i> Monthly Expenses</h6>
+                    <h4 class="mb-0"><?php echo formatCurrency($stats['monthly_expenses']); ?></h4>
+                    <small class="text-muted">Current month</small>
+                </div>
+                <div class="card-footer bg-light border-0">
+                    <a href="expenses/list.php" class="text-decoration-none small">
+                        View details <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body">
+                    <h6 class="text-success"><i class="bi bi-box-seam"></i> Total Assets</h6>
+                    <h4 class="mb-0"><?php echo formatCurrency($stats['total_assets']); ?></h4>
+                    <small class="text-muted">Current value</small>
+                </div>
+                <div class="card-footer bg-light border-0">
+                    <a href="assets/list.php" class="text-decoration-none small">
+                        View assets <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-info">
+                <div class="card-body">
+                    <h6 class="text-info"><i class="bi bi-arrow-repeat"></i> Active Services</h6>
+                    <h4 class="mb-0"><?php echo $stats['active_services']; ?></h4>
+                    <small class="text-muted">Subscriptions</small>
+                </div>
+                <div class="card-footer bg-light border-0">
+                    <a href="services/list.php" class="text-decoration-none small">
+                        View services <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <h6 class="text-primary"><i class="bi bi-cash-stack"></i> Net Cashflow</h6>
+                    <h4 class="mb-0 <?php echo $stats['net_cashflow'] >= 0 ? 'text-success' : 'text-danger'; ?>">
+                        <?php echo formatCurrency($stats['net_cashflow']); ?>
+                    </h4>
+                    <small class="text-muted">Current month</small>
+                </div>
+                <div class="card-footer bg-light border-0">
+                    <a href="accounts/cashbook.php" class="text-decoration-none small">
+                        View cashbook <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
     
     <div class="row">
         <!-- Recent Quotations -->
