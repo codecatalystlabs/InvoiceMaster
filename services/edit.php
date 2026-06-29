@@ -156,7 +156,7 @@ include '../includes/header.php';
                 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="cost" class="form-label">Cost (<?php echo CURRENCY_CODE; ?>) <span class="text-danger">*</span></label>
+                        <label for="cost" class="form-label">Cost (<?php echo APP_CURRENCY_CODE; ?>) <span class="text-danger">*</span></label>
                         <input type="number" class="form-control" id="cost" name="cost" 
                                step="0.01" min="0" value="<?php echo $service['cost']; ?>" required>
                     </div>

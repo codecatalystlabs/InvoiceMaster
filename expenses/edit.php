@@ -191,7 +191,7 @@ include '../includes/header.php';
                         
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="amount" class="form-label">Amount (<?php echo CURRENCY_CODE; ?>) <span class="text-danger">*</span></label>
+                                <label for="amount" class="form-label">Amount (<?php echo APP_CURRENCY_CODE; ?>) <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control" id="amount" name="amount" step="0.01" min="0" 
                                        value="<?php echo $expense['amount']; ?>" required>
                             </div>

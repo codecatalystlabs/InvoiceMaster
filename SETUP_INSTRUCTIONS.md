@@ -230,8 +230,8 @@ The system has 3 roles with different permissions:
 ### Currency Settings
 Located in `includes/config.php`:
 ```php
-define('CURRENCY_CODE', 'UGX');  // Change to your currency
-define('CURRENCY_SYMBOL', 'UGX');
+define('APP_CURRENCY_CODE', 'UGX');  // Change to your currency
+define('APP_CURRENCY_SYMBOL', 'UGX');
 ```
 
 ### Items Per Page

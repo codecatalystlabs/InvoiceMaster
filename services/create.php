@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $start_date = clean($_POST['start_date']);
     $end_date = !empty($_POST['end_date']) ? clean($_POST['end_date']) : null;
     $next_billing_date = clean($_POST['next_billing_date']);
-    $auto_renew = isset($_POST['auto_renew']) ? 1 : 0;
+    $auto_renew = isset($_POST['auto_renew']);
     $status = clean($_POST['status']);
     $description = clean($_POST['description']);
     
@@ -144,7 +144,7 @@ include '../includes/header.php';
                 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="cost" class="form-label">Cost (<?php echo CURRENCY_CODE; ?>) <span class="text-danger">*</span></label>
+                        <label for="cost" class="form-label">Cost (<?php echo APP_CURRENCY_CODE; ?>) <span class="text-danger">*</span></label>
                         <input type="number" class="form-control" id="cost" name="cost" 
                                step="0.01" min="0" value="<?php echo isset($_POST['cost']) ? $_POST['cost'] : ''; ?>" required>
                     </div>

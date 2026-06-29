@@ -23,8 +23,10 @@ define('COMPANY_PHONE', '+256 (783) 261162');
 define('COMPANY_ADDRESS', '32 Kanjokya Street, Mug One House, Kamwokya');
 
 // Currency Settings
-define('CURRENCY_CODE', 'UGX');
-define('CURRENCY_SYMBOL', 'UGX');
+// Use APP_-prefixed names to avoid clashing with a global CURRENCY_SYMBOL that
+// some hosting PHP environments/extensions already define.
+define('APP_CURRENCY_CODE', 'UGX');
+define('APP_CURRENCY_SYMBOL', 'UGX');
 
 // Tax Rate (percentage)
 define('DEFAULT_TAX_RATE', 10);

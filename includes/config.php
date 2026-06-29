@@ -34,11 +34,15 @@ define('COMPANY_PHONE', '+256 (783) 261162');
 define('COMPANY_ADDRESS', '32 Kanjokya Street, Mug One House, Kamwokya');
 
 // Currency Settings
-if (!defined('CURRENCY_CODE')) {
-    define('CURRENCY_CODE', 'UGX');
+// NOTE: Do not use the bare names CURRENCY_CODE / CURRENCY_SYMBOL here. Some
+// hosting PHP environments/extensions already define a global CURRENCY_SYMBOL
+// (e.g. as int 262145), which would override these values. We use APP_-prefixed
+// constants to avoid any collision.
+if (!defined('APP_CURRENCY_CODE')) {
+    define('APP_CURRENCY_CODE', 'UGX');
 }
-if (!defined('CURRENCY_SYMBOL')) {
-    define('CURRENCY_SYMBOL', 'UGX');
+if (!defined('APP_CURRENCY_SYMBOL')) {
+    define('APP_CURRENCY_SYMBOL', 'UGX');
 }
 
 // Logo Settings

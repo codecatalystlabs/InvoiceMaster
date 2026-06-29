@@ -124,7 +124,18 @@ function logAudit($conn, $action, $entity_type, $entity_id = null, $details = ''
  * Format currency
  */
 function formatCurrency($amount) {
-    return CURRENCY_SYMBOL . ' ' . number_format($amount, 0);
+    // Resolve the currency symbol defensively. Some hosting PHP environments
+    // already define a global CURRENCY_SYMBOL (e.g. as int 262145), so we use an
+    // APP_-prefixed constant and still guard against any non-string value.
+    if (defined('APP_CURRENCY_SYMBOL') && is_string(APP_CURRENCY_SYMBOL) && !is_numeric(APP_CURRENCY_SYMBOL) && trim(APP_CURRENCY_SYMBOL) !== '') {
+        $symbol = APP_CURRENCY_SYMBOL;
+    } elseif (defined('APP_CURRENCY_CODE') && is_string(APP_CURRENCY_CODE) && !is_numeric(APP_CURRENCY_CODE) && trim(APP_CURRENCY_CODE) !== '') {
+        $symbol = APP_CURRENCY_CODE;
+    } else {
+        $symbol = 'UGX';
+    }
+
+    return $symbol . ' ' . number_format((float)$amount, 0);
 }
 
 /**
