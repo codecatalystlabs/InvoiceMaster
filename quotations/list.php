@@ -70,11 +70,16 @@ include '../includes/header.php';
     
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="bi bi-file-earmark-text"></i> Quotations</h2>
-        <?php if (hasRole(['Admin', 'Sales'])): ?>
-        <a href="create.php" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Create Quotation
-        </a>
-        <?php endif; ?>
+        <div class="d-flex gap-2">
+            <a href="<?php echo APP_URL; ?>/export.php?type=quotations" class="btn btn-outline-success">
+                <i class="bi bi-filetype-csv"></i> Export CSV
+            </a>
+            <?php if (hasRole(['Admin', 'Sales'])): ?>
+            <a href="create.php" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create Quotation
+            </a>
+            <?php endif; ?>
+        </div>
     </div>
     
     <!-- Filters -->

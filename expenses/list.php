@@ -126,9 +126,14 @@ include '../includes/header.php';
     
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="bi bi-receipt-cutoff"></i> Expense Management</h2>
-        <a href="create.php" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Add New Expense
-        </a>
+        <div class="d-flex gap-2">
+            <a href="<?php echo APP_URL; ?>/export.php?type=expenses" class="btn btn-outline-success">
+                <i class="bi bi-filetype-csv"></i> Export CSV
+            </a>
+            <a href="create.php" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add New Expense
+            </a>
+        </div>
     </div>
     
     <!-- Stats Cards -->

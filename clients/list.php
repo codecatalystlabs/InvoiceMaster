@@ -60,11 +60,16 @@ include '../includes/header.php';
     
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="bi bi-people"></i> Clients</h2>
-        <?php if (hasRole(['Admin', 'Sales'])): ?>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClientModal">
-            <i class="bi bi-plus-circle"></i> Add Client
-        </button>
-        <?php endif; ?>
+        <div class="d-flex gap-2">
+            <a href="<?php echo APP_URL; ?>/export.php?type=clients" class="btn btn-outline-success">
+                <i class="bi bi-filetype-csv"></i> Export CSV
+            </a>
+            <?php if (hasRole(['Admin', 'Sales'])): ?>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClientModal">
+                <i class="bi bi-plus-circle"></i> Add Client
+            </button>
+            <?php endif; ?>
+        </div>
     </div>
     
     <!-- Search -->

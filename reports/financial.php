@@ -104,9 +104,17 @@ include '../includes/header.php';
     
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="bi bi-graph-up"></i> Financial Reports</h2>
-        <button onclick="window.print()" class="btn btn-secondary">
-            <i class="bi bi-printer"></i> Print Report
-        </button>
+        <div class="d-flex gap-2">
+            <a href="<?php echo APP_URL; ?>/reports/analytics.php" class="btn btn-outline-primary">
+                <i class="bi bi-bar-chart-line"></i> Analytics
+            </a>
+            <a href="<?php echo APP_URL; ?>/reports/exports.php" class="btn btn-outline-success">
+                <i class="bi bi-download"></i> Export Data
+            </a>
+            <button onclick="window.print()" class="btn btn-secondary">
+                <i class="bi bi-printer"></i> Print Report
+            </button>
+        </div>
     </div>
     
     <!-- Date Range Filter -->

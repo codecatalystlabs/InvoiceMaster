@@ -72,6 +72,10 @@ if (!isset($page_title)) {
                             <li><a class="dropdown-item" href="<?php echo APP_URL; ?>/clients/list.php">
                                 <i class="bi bi-people"></i> Clients
                             </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>/reports/exports.php">
+                                <i class="bi bi-download"></i> Export Data
+                            </a></li>
                         </ul>
                     </li>
                     
@@ -110,6 +114,13 @@ if (!isset($page_title)) {
                             </a></li>
                             <li><a class="dropdown-item" href="<?php echo APP_URL; ?>/reports/ledger.php">
                                 <i class="bi bi-book"></i> General Ledger
+                            </a></li>
+                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>/reports/analytics.php">
+                                <i class="bi bi-bar-chart-line"></i> Analytics
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="<?php echo APP_URL; ?>/reports/exports.php">
+                                <i class="bi bi-download"></i> Export Data
                             </a></li>
                         </ul>
                     </li>

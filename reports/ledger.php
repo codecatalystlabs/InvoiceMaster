@@ -67,9 +67,14 @@ include '../includes/header.php';
     
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="bi bi-book"></i> General Ledger</h2>
-        <button onclick="window.print()" class="btn btn-secondary">
-            <i class="bi bi-printer"></i> Print Report
-        </button>
+        <div class="d-flex gap-2">
+            <a href="<?php echo APP_URL; ?>/export.php?type=ledger" class="btn btn-outline-success">
+                <i class="bi bi-filetype-csv"></i> Export CSV
+            </a>
+            <button onclick="window.print()" class="btn btn-secondary">
+                <i class="bi bi-printer"></i> Print Report
+            </button>
+        </div>
     </div>
     
     <!-- Filters -->

@@ -31,10 +31,10 @@ CREATE TABLE IF NOT EXISTS quotations (
     client_id INT NOT NULL,
     quotation_number VARCHAR(50) NOT NULL UNIQUE,
     date DATE NOT NULL,
-    subtotal DECIMAL(10,2) DEFAULT 0.00,
-    tax DECIMAL(10,2) DEFAULT 0.00,
-    discount DECIMAL(10,2) DEFAULT 0.00,
-    total DECIMAL(10,2) DEFAULT 0.00,
+    subtotal DECIMAL(15,2) DEFAULT 0.00,
+    tax DECIMAL(15,2) DEFAULT 0.00,
+    discount DECIMAL(15,2) DEFAULT 0.00,
+    total DECIMAL(15,2) DEFAULT 0.00,
     status ENUM('Draft', 'Sent', 'Accepted', 'Rejected', 'Converted') DEFAULT 'Draft',
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -48,8 +48,8 @@ CREATE TABLE IF NOT EXISTS quotation_items (
     quotation_id INT NOT NULL,
     item_name VARCHAR(255) NOT NULL,
     qty INT NOT NULL DEFAULT 1,
-    unit_price DECIMAL(10,2) NOT NULL,
-    total DECIMAL(10,2) NOT NULL,
+    unit_price DECIMAL(15,2) NOT NULL,
+    total DECIMAL(15,2) NOT NULL,
     FOREIGN KEY (quotation_id) REFERENCES quotations(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -61,10 +61,10 @@ CREATE TABLE IF NOT EXISTS invoices (
     invoice_number VARCHAR(50) NOT NULL UNIQUE,
     date DATE NOT NULL,
     due_date DATE NOT NULL,
-    subtotal DECIMAL(10,2) DEFAULT 0.00,
-    tax DECIMAL(10,2) DEFAULT 0.00,
-    discount DECIMAL(10,2) DEFAULT 0.00,
-    total DECIMAL(10,2) DEFAULT 0.00,
+    subtotal DECIMAL(15,2) DEFAULT 0.00,
+    tax DECIMAL(15,2) DEFAULT 0.00,
+    discount DECIMAL(15,2) DEFAULT 0.00,
+    total DECIMAL(15,2) DEFAULT 0.00,
     status ENUM('Unpaid', 'Partially Paid', 'Paid', 'Overdue', 'Cancelled') DEFAULT 'Unpaid',
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -79,8 +79,8 @@ CREATE TABLE IF NOT EXISTS invoice_items (
     invoice_id INT NOT NULL,
     item_name VARCHAR(255) NOT NULL,
     qty INT NOT NULL DEFAULT 1,
-    unit_price DECIMAL(10,2) NOT NULL,
-    total DECIMAL(10,2) NOT NULL,
+    unit_price DECIMAL(15,2) NOT NULL,
+    total DECIMAL(15,2) NOT NULL,
     FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

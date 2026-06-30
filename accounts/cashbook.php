@@ -89,9 +89,14 @@ include '../includes/header.php';
     
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="bi bi-cash-stack"></i> Cashbook</h2>
-        <a href="cashbook_entry.php" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> New Entry
-        </a>
+        <div class="d-flex gap-2">
+            <a href="<?php echo APP_URL; ?>/export.php?type=cashbook" class="btn btn-outline-success">
+                <i class="bi bi-filetype-csv"></i> Export CSV
+            </a>
+            <a href="cashbook_entry.php" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> New Entry
+            </a>
+        </div>
     </div>
     
     <!-- Summary Cards -->

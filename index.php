@@ -37,10 +37,10 @@ $query = "SELECT SUM(total) as revenue FROM invoices WHERE status = 'Paid'";
 $result = mysqli_query($conn, $query);
 $stats['total_revenue'] = mysqli_fetch_assoc($result)['revenue'] ?? 0;
 
-// Pending Amount (Unpaid Invoices)
-$query = "SELECT SUM(total) as pending FROM invoices WHERE status IN ('Unpaid', 'Overdue')";
+// Pending Amount (outstanding receivables: unpaid, partially paid, overdue)
+$query = "SELECT SUM(total) as pending FROM invoices WHERE status IN ('Unpaid', 'Partially Paid', 'Overdue')";
 $result = mysqli_query($conn, $query);
-$stats['pending_amount'] = mysqli_fetch_assoc($result)['pending'] ?? 0;
+$stats['pending_amount'] = (float)(mysqli_fetch_assoc($result)['pending'] ?? 0);
 
 // Accounting stats (for Admin and Finance)
 if (hasRole(['Admin', 'Finance'])) {
