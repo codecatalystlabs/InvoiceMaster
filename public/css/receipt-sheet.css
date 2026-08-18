@@ -50,7 +50,8 @@
 .rcpt-preview .field-label { white-space: nowrap; }
 .rcpt-preview .field-fill { flex: 1; border-bottom: 1.5px solid #111; padding-bottom: 2px; align-self: end; }
 .rcpt-preview .field-fill.short { flex: 0 0 55%; }
-.rcpt-preview .field-fill .value { display: inline-block; padding: 0 4px; }
+.rcpt-preview .field-fill .value,
+.rcpt-preview .shs-usd-box { font-family: "IBM Plex Mono", "Courier New", Courier, monospace; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
 .rcpt-preview .telephone-row .field-line { width: 45%; }
 .rcpt-preview .shs-usd-row { display: flex; align-items: flex-end; gap: 12px; margin-top: 18px; }
 .rcpt-preview .shs-usd-label { font-size: 20px; align-self: center; transform: translateY(-70%); }
@@ -59,7 +60,14 @@
 .rcpt-preview .for-line { text-align: right; font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 13px; margin-top: 18px; }
 .rcpt-preview .for-line .company { font-weight: 900; }
 .rcpt-preview .with-thanks { font-style: italic; font-size: 20px; margin-top: 10px; text-align: center; }
-.rcpt-preview .signature-fill { flex: 0 0 30%; border-bottom: 1.5px solid #111; height: 1px; align-self: end; margin-bottom: 4px; }
+.rcpt-preview .signature-fill {
+    flex: 0 0 30%;
+    border-bottom: 1.5px solid #111;
+    min-height: 1.35em;
+    align-self: end;
+    padding-bottom: 2px;
+    font-weight: 600;
+}
 @media print {
     .no-print { display: none !important; }
     .rcpt-preview .sheet-wrap { max-width: none; overflow: visible; margin: 0; }

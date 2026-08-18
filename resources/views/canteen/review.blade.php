@@ -8,7 +8,7 @@
 <div class="d-flex justify-content-between mb-3 flex-wrap gap-2">
     <h5 class="mb-0">Pending · {{ $pending->count() }}</h5>
     @if($pending->count())
-    <form method="POST" action="{{ route('canteen.bulk') }}" onsubmit="return confirm('Approve every pending entry for this day?')">
+    <form method="POST" action="{{ route('canteen.bulk') }}" data-confirm="Approve every pending entry for this day?">
         @csrf<input type="hidden" name="date" value="{{ $date }}">
         <button class="btn btn-success">Approve all for this day</button>
     </form>
@@ -26,7 +26,7 @@
         <div class="d-flex gap-2 mt-2">
             <a href="{{ route('canteen.show', $meal) }}" class="btn btn-sm btn-outline-secondary">View</a>
             <form method="POST" action="{{ route('canteen.approve', $meal) }}">@csrf<button class="btn btn-sm btn-success">Accept</button></form>
-            <form method="POST" action="{{ route('canteen.refuse', $meal) }}">@csrf
+            <form method="POST" action="{{ route('canteen.refuse', $meal) }}" data-confirm="Refuse this meal declaration?">@csrf
                 <input type="hidden" name="review_notes" value="Please declare again with the correct items.">
                 <button class="btn btn-sm btn-outline-danger">Refuse</button>
             </form>

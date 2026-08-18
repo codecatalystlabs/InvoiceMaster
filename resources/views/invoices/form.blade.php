@@ -44,6 +44,17 @@
 <div class="card"><div class="card-body">
     <label class="form-label">Tax %</label><input type="number" step="0.01" id="tax_rate" name="tax_rate" class="form-control mb-2" value="{{ old('tax_rate', auth()->user()->company->tax_rate) }}">
     <label class="form-label">Discount</label><input type="number" step="0.01" id="discount" name="discount" class="form-control mb-3" value="{{ old('discount', $invoice->discount) }}">
+    <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" name="is_recurring" value="1" id="recurring" @checked(old('is_recurring', $invoice->is_recurring))>
+        <label class="form-check-label" for="recurring">Recurring invoice</label>
+    </div>
+    <select name="recurrence_frequency" class="form-select mb-2">
+        @foreach(['Monthly'=>'Monthly','Quarterly'=>'Quarterly','Yearly'=>'Yearly'] as $k=>$v)
+            <option value="{{ $k }}" @selected(old('recurrence_frequency', $invoice->recurrence_frequency)===$k)>{{ $v }}</option>
+        @endforeach
+    </select>
+    <label class="form-label">Next repeat</label>
+    <input type="date" name="next_recurrence_date" class="form-control mb-3" value="{{ old('next_recurrence_date', optional($invoice->next_recurrence_date)->toDateString()) }}">
     <div class="d-flex justify-content-between"><span>Subtotal</span><strong id="sumSub">{{ number_format($invoice->subtotal ?? 0) }}</strong></div>
     <div class="d-flex justify-content-between"><span>Tax</span><strong id="sumTax">{{ number_format($invoice->tax ?? 0) }}</strong></div>
     <div class="d-flex justify-content-between fs-5"><span>Total</span><strong id="sumTotal">{{ number_format($invoice->total ?? 0) }}</strong></div>

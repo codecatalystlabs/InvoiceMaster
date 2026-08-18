@@ -1,3 +1,20 @@
+@php
+    $pageNo = trim((string) ($entry->folio ?? ''));
+    if ($pageNo === '') {
+        $digits = preg_replace('/\D/', '', (string) $entry->number);
+        $pageNo = $digits !== '' ? str_pad(substr($digits, -3), 3, '0', STR_PAD_LEFT) : '';
+    }
+    $digits = preg_replace('/\D/', '', (string) $entry->number);
+    $folio = $entry->folio ?: ($digits !== '' ? substr($digits, -4) : '');
+    $isDebit = $entry->type === 'debit';
+    $entryDate = $entry->entry_date?->format('d/m/y');
+    $discount = (float) $entry->discount_allowed > 0 ? number_format((float) $entry->discount_allowed) : '';
+    $cashAmount = money($entry->amount, $company);
+    $filled = '<td>'.$entryDate.'</td><td style="text-align:left;">'.e($entry->description).'</td><td>'.e($folio).'</td><td>'.$discount.'</td><td>'.$cashAmount.'</td>';
+    $empty = '<td></td><td></td><td></td><td></td><td></td>';
+    $debitCells = $isDebit ? $filled : $empty;
+    $creditCells = ! $isDebit ? $filled : $empty;
+@endphp
 <html>
 <head>
 <style>
@@ -20,25 +37,11 @@ table { border-collapse: collapse; width: 100%; }
 .ledger th, .ledger td { border: 1px solid #333; font-size: 11px; text-align: center; padding: 4px 3px; }
 .ledger th { font-family: Georgia, serif; font-weight: bold; font-size: 11px; padding: 5px 3px; }
 .ledger td { height: 22px; }
+.money { font-family: "Courier New", Courier, monospace; font-weight: 600; }
 .ledger td.divider, .ledger th.divider { background: #222; border: none; padding: 0; width: 5px; }
 </style>
 </head>
 <body>
-@php
-    $pageNo = trim((string) ($entry->folio ?? ''));
-    if ($pageNo === '') {
-        $digits = preg_replace('/\D/', '', (string) $entry->number);
-        $pageNo = $digits !== '' ? str_pad(substr($digits, -3), 3, '0', STR_PAD_LEFT) : '';
-    }
-    $isDebit = $entry->type === 'debit';
-    $entryDate = $entry->entry_date?->format('d/m/y');
-    $discount = (float) $entry->discount_allowed > 0 ? number_format((float) $entry->discount_allowed) : '';
-    $cashAmount = money($entry->amount, $company);
-    $filled = '<td>'.$entryDate.'</td><td style="text-align:left;">'.e($entry->description).'</td><td>'.e($entry->folio).'</td><td>'.$discount.'</td><td>'.$cashAmount.'</td>';
-    $empty = '<td></td><td></td><td></td><td></td><td></td>';
-    $debitCells = $isDebit ? $filled : $empty;
-    $creditCells = ! $isDebit ? $filled : $empty;
-@endphp
 <table class="header-table header-rule"><tr>
     <td style="width:26%;">
         @if($company->logoDataUri())

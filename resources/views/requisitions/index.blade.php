@@ -13,6 +13,7 @@
     </form>
     <a href="{{ route('requisitions.create') }}" class="btn btn-primary">New request</a>
 </div>
+<p class="text-muted">Request → approve → issue from the tin → account → accept. Spend posts as an expense. Leftover cash returns to the tin.</p>
 <div class="card"><table class="table mb-0"><thead><tr><th>#</th><th>Title</th><th>Who</th><th>Dept</th><th>Amount</th><th>Status</th></tr></thead><tbody>
 @forelse($rows as $row)
 <tr>

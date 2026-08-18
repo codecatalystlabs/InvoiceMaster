@@ -22,14 +22,19 @@ class DocumentMailer
         $pdf = DocumentExport::invoicePdf($invoice);
         $path = self::savePdf($pdf, $filename);
 
+        $intro = $message ?: 'Please find attached invoice '.$invoice->invoice_number.'.';
+        if ($invoice->isOpen()) {
+            $intro .= "\n\nPay online: ".$invoice->payUrl();
+        }
+
         return self::dispatch(
             company: $company,
             to: $to,
             subject: 'Invoice '.$invoice->invoice_number.' from '.$company->name,
-            intro: $message ?: 'Please find attached invoice '.$invoice->invoice_number.'.',
+            intro: $intro,
             docLabel: 'Invoice',
             docNumber: $invoice->invoice_number,
-            amountLabel: money($invoice->total),
+            amountLabel: money_text($invoice->total),
             pdfPath: $path,
             pdfName: $filename,
             referenceType: 'invoice',
@@ -52,7 +57,7 @@ class DocumentMailer
             intro: $message ?: 'Please find attached quotation '.$quotation->quotation_number.'.',
             docLabel: 'Quotation',
             docNumber: $quotation->quotation_number,
-            amountLabel: money($quotation->total),
+            amountLabel: money_text($quotation->total),
             pdfPath: $path,
             pdfName: $filename,
             referenceType: 'quotation',
@@ -75,7 +80,7 @@ class DocumentMailer
             intro: $message ?: 'Please find attached receipt '.$receipt->number.'.',
             docLabel: 'Receipt',
             docNumber: $receipt->number,
-            amountLabel: money($receipt->amount),
+            amountLabel: money_text($receipt->amount),
             pdfPath: $path,
             pdfName: $filename,
             referenceType: 'receipt',

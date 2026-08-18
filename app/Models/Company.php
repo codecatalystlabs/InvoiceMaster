@@ -9,12 +9,12 @@ class Company extends Model
 {
     protected $fillable = [
         'name', 'address', 'phone', 'email', 'logo_path', 'currency',
-        'tagline', 'services_line', 'tax_rate', 'invoice_prefix', 'accent_color',
+        'tagline', 'services_line', 'tax_rate', 'invoice_prefix', 'accent_color', 'settings',
     ];
 
     protected function casts(): array
     {
-        return ['tax_rate' => 'float'];
+        return ['tax_rate' => 'float', 'settings' => 'array'];
     }
 
     public function users(): HasMany
@@ -83,5 +83,15 @@ class Company extends Model
     public function displayNameUpper(): string
     {
         return strtoupper($this->name ?: 'CODE CATALYST LABS');
+    }
+
+    public function setting(string $key, mixed $default = null): mixed
+    {
+        return data_get($this->settings ?? [], $key, $default);
+    }
+
+    public function vatRate(): float
+    {
+        return (float) ($this->tax_rate ?: $this->setting('vat_rate', 18));
     }
 }

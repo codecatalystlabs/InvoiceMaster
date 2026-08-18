@@ -1,5 +1,8 @@
 @php
     $confirm = $confirm ?? 'Delete this record? This cannot be undone.';
+    if (! str_contains($confirm, 'cannot be undone')) {
+        $confirm .= ' This cannot be undone.';
+    }
 @endphp
 <div class="row-actions">
     @isset($view)
@@ -15,7 +18,7 @@
         <a class="btn btn-sm btn-outline-secondary" href="{{ $docx }}" title="Word"><i class="bi bi-file-earmark-word"></i></a>
     @endisset
     @isset($delete)
-        <form method="POST" action="{{ $delete }}" onsubmit="return confirm(@json($confirm))">
+        <form method="POST" action="{{ $delete }}" data-confirm="{{ $confirm }}">
             @csrf @method('DELETE')
             <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
         </form>

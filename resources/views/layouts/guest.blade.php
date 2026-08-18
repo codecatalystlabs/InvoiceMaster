@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title') · {{ config('app.name') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
@@ -21,6 +21,10 @@
             </span>
         </a>
     </header>
+    <div class="app-menubar no-print">
+        <a href="{{ route('login') }}"><u>F</u>ile</a>
+        <a href="{{ route('login') }}"><u>H</u>elp</a>
+    </div>
     <div class="auth-wrap">
         <div class="auth-card">
             <div class="auth-card-top">
@@ -41,6 +45,11 @@
             @yield('content')
         </div>
     </div>
+    <footer class="app-statusbar no-print">
+        <span class="sb-cell">Ready</span>
+        <span class="sb-cell">Sign in to continue</span>
+        <span class="sb-cell sb-end">{{ config('app.name') }}</span>
+    </footer>
 </div>
 </body>
 </html>

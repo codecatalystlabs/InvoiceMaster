@@ -7,6 +7,7 @@ use App\Models\ServicePayment;
 use App\Support\Audit;
 use App\Support\CashBookService;
 use App\Support\DocumentNumber;
+use App\Support\LedgerService;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
@@ -86,6 +87,7 @@ class ServiceController extends Controller
             'payment_method' => $payment->payment_method,
             'service_id' => $service->id,
         ]);
+        LedgerService::postServicePayment($payment);
 
         return back()->with('success', 'Payment recorded.');
     }

@@ -38,7 +38,7 @@
                     <textarea name="review_notes" class="form-control mb-2" placeholder="Optional note"></textarea>
                     <button class="btn btn-success w-100">Approve edit</button>
                 </form>
-                <form method="POST" action="{{ route('requests.refuse', $requestRow) }}">@csrf
+                <form method="POST" action="{{ route('requests.refuse', $requestRow) }}" data-confirm="Refuse this edit request?">@csrf
                     <textarea name="review_notes" class="form-control mb-2" placeholder="Reason to refuse" required></textarea>
                     <button class="btn btn-outline-danger w-100">Refuse edit</button>
                 </form>

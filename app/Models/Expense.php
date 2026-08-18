@@ -14,7 +14,7 @@ class Expense extends Model
         'company_id', 'expense_number', 'expense_date', 'account_id', 'vendor_name',
         'category', 'amount', 'payment_method', 'payment_status', 'is_recurring',
         'recurrence_frequency', 'next_recurrence_date', 'description', 'receipt_file', 'created_by',
-        'source_type', 'source_id',
+        'source_type', 'source_id', 'project_id', 'tax',
     ];
 
     protected function casts(): array
@@ -23,6 +23,7 @@ class Expense extends Model
             'expense_date' => 'date',
             'next_recurrence_date' => 'date',
             'amount' => 'float',
+            'tax' => 'float',
             'is_recurring' => 'boolean',
         ];
     }

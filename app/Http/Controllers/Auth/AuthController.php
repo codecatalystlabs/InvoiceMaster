@@ -64,6 +64,7 @@ class AuthController extends Controller
             'name' => $data['company_name'],
             'email' => $data['email'],
             'currency' => 'UGX',
+            'settings' => ['payment_provider' => 'yo'],
         ]);
 
         $user = User::create([
@@ -82,7 +83,7 @@ class AuthController extends Controller
         Auth::login($user);
         Audit::log('Register', 'User', $user->id, 'Company created');
 
-        return redirect()->route('dashboard');
+        return redirect()->route('settings.company')->with('success', 'Company workspace created. Add letterhead, contacts, tax, and payment details below. This company has its own invoices, users, and settings.');
     }
 
     public function showAcceptInvite(string $token)

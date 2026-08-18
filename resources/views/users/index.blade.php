@@ -30,7 +30,7 @@
         <div class="row-actions">
             <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editUser{{ $u->id }}" title="Edit"><i class="bi bi-pencil"></i></button>
             @if($u->id !== auth()->id())
-            <form method="POST" action="{{ route('users.destroy', $u) }}" onsubmit="return confirm('Delete user {{ $u->name }}?')">@csrf @method('DELETE')
+            <form method="POST" action="{{ route('users.destroy', $u) }}" data-confirm="Delete user {{ $u->name }}? This cannot be undone.">@csrf @method('DELETE')
                 <button class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
             </form>
             @endif

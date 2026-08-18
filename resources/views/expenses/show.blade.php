@@ -5,7 +5,7 @@
     <a href="{{ route('expenses.index') }}" class="btn btn-secondary">Back</a>
     <div class="d-flex gap-2">
         <a href="{{ route('expenses.edit',$expense) }}" class="btn btn-primary">Edit</a>
-        <form method="POST" action="{{ route('expenses.destroy', $expense) }}" onsubmit="return confirm('Delete this expense?')">@csrf @method('DELETE')
+        <form method="POST" action="{{ route('expenses.destroy', $expense) }}" data-confirm="Delete expense {{ $expense->expense_number }}? This cannot be undone.">@csrf @method('DELETE')
             <button class="btn btn-outline-danger">Delete</button>
         </form>
     </div>

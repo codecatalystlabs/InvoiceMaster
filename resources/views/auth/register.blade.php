@@ -3,6 +3,7 @@
 @section('subtitle', 'Create your company workspace')
 @section('content')
 <form method="POST" action="{{ route('register') }}">@csrf
+    <p class="text-muted small">This creates a <strong>new company workspace</strong> with its own letterhead, users, invoices, and settings. Teammates join this company by invite, not by registering again.</p>
     <div class="mb-3"><label class="form-label">Company name</label><input name="company_name" class="form-control" value="{{ old('company_name') }}" required></div>
     <div class="mb-3"><label class="form-label">Your name</label><input name="name" class="form-control" value="{{ old('name') }}" required></div>
     <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email" class="form-control" value="{{ old('email') }}" required></div>

@@ -27,6 +27,11 @@ class BudgetAllocation extends Model
         return $this->hasMany(Requisition::class);
     }
 
+    public function topups(): HasMany
+    {
+        return $this->hasMany(PettyCashEntry::class, 'budget_allocation_id');
+    }
+
     public static function categories(): array
     {
         return [
@@ -42,16 +47,27 @@ class BudgetAllocation extends Model
 
     public function spent(): float
     {
-        return (float) $this->requisitions()->where('status', 'closed')->sum('accounted_amount');
+        $fromReq = (float) $this->requisitions()->where('status', 'closed')->sum('accounted_amount');
+        $fromTin = (float) $this->topups()->whereIn('type', ['allocation', 'replenish'])->sum('amount');
+
+        return $fromReq + $fromTin;
     }
 
     public function committed(): float
     {
-        return (float) $this->requisitions()->whereNotIn('status', ['rejected', 'closed'])->sum('amount');
+        return $this->committedExcluding();
     }
 
-    public function available(): float
+    public function committedExcluding(?int $requisitionId = null): float
     {
-        return max(0, (float) $this->amount - $this->spent() - $this->committed());
+        return (float) $this->requisitions()
+            ->whereNotIn('status', ['rejected', 'closed'])
+            ->when($requisitionId, fn ($q) => $q->where('id', '!=', $requisitionId))
+            ->sum('amount');
+    }
+
+    public function available(?int $excludingRequisitionId = null): float
+    {
+        return max(0, (float) $this->amount - $this->spent() - $this->committedExcluding($excludingRequisitionId));
     }
 }

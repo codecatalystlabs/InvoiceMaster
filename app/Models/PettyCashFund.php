@@ -42,6 +42,15 @@ class PettyCashFund extends Model
 
     public function headroom(): float
     {
+        if ((float) $this->float_limit <= 0) {
+            return 0;
+        }
+
         return max(0, (float) $this->float_limit - (float) $this->balance);
+    }
+
+    public function hasFloatCap(): bool
+    {
+        return (float) $this->float_limit > 0;
     }
 }

@@ -101,7 +101,7 @@ class CanteenReviewController extends Controller
             $data['price'] = 0;
         }
         $item = CanteenItem::create($data);
-        Audit::log('Create', 'CanteenItem', $item->id, $item->name.' · '.money($item->price), $item->price, ['module' => 'canteen.catalog']);
+        Audit::log('Create', 'CanteenItem', $item->id, $item->name.' · '.money_text($item->price), $item->price, ['module' => 'canteen.catalog']);
 
         return back()->with('success', 'Item added to the catalog.');
     }
@@ -122,7 +122,7 @@ class CanteenReviewController extends Controller
             $data['price'] = 0;
         }
         $canteenItem->update($data);
-        Audit::log('Update', 'CanteenItem', $canteenItem->id, $canteenItem->name.' · '.money($canteenItem->price), $canteenItem->price, ['module' => 'canteen.catalog']);
+        Audit::log('Update', 'CanteenItem', $canteenItem->id, $canteenItem->name.' · '.money_text($canteenItem->price), $canteenItem->price, ['module' => 'canteen.catalog']);
 
         return back()->with('success', 'Catalog item updated.');
     }

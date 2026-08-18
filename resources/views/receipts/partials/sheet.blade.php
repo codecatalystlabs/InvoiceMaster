@@ -75,8 +75,8 @@
                 <div class="with-thanks">With thanks</div>
             </div>
             <div style="flex:1;"></div>
-            <span class="field-label" style="margin-right:8px;">Signature:</span>
-            <span class="signature-fill"></span>
+            <span class="field-label" style="margin-right:8px;">Served by:</span>
+            <span class="signature-fill"><span class="value">{{ $receipt->servedByName() }}</span></span>
         </div>
         <div class="for-line">for; <span class="company">{{ $company->displayNameUpper() }}</span></div>
     </div>

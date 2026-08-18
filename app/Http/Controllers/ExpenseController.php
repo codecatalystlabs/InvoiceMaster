@@ -7,6 +7,7 @@ use App\Models\Expense;
 use App\Support\Audit;
 use App\Support\CashBookService;
 use App\Support\DocumentNumber;
+use App\Support\LedgerService;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
@@ -41,6 +42,7 @@ class ExpenseController extends Controller
         $data['expense_number'] = DocumentNumber::next('EXP', 'expenses', 'expense_number', auth()->user()->company_id);
         $expense = Expense::create($data);
         $this->maybePostCash($expense);
+        LedgerService::postExpense($expense);
         Audit::log('Create', 'Expense', $expense->id, $expense->expense_number);
 
         return redirect()->route('expenses.show', $expense)->with('success', 'Expense recorded.');
@@ -64,6 +66,7 @@ class ExpenseController extends Controller
     public function update(Request $request, Expense $expense)
     {
         $expense->update($this->validated($request));
+        LedgerService::postExpense($expense);
         Audit::log('Update', 'Expense', $expense->id, $expense->expense_number);
 
         return redirect()->route('expenses.show', $expense)->with('success', 'Expense updated.');
@@ -71,6 +74,7 @@ class ExpenseController extends Controller
 
     public function destroy(Expense $expense)
     {
+        LedgerService::forget('Expense', $expense->id);
         Audit::log('Delete', 'Expense', $expense->id, $expense->expense_number);
         $expense->delete();
 

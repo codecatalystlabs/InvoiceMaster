@@ -28,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
             $unread = 0;
             $pendingMealReviews = 0;
             $pendingChangeRequests = 0;
+            $pendingRequisitions = 0;
             if (auth()->check()) {
                 if (auth()->user()->canAccess('emails')) {
                     $unread = EmailMessage::query()
@@ -39,11 +40,15 @@ class AppServiceProvider extends ServiceProvider
                     $pendingMealReviews = \App\Models\CanteenMeal::query()->where('status', 'pending')->count();
                     $pendingChangeRequests = \App\Models\ChangeRequest::query()->where('status', 'pending')->count();
                 }
+                if (auth()->user()->canAccess('requisitions.review')) {
+                    $pendingRequisitions = \App\Models\Requisition::query()->whereIn('status', ['submitted', 'initiated', 'accounted'])->count();
+                }
             }
             $view->with([
                 'unreadEmails' => $unread,
                 'pendingMealReviews' => $pendingMealReviews,
                 'pendingChangeRequests' => $pendingChangeRequests,
+                'pendingRequisitions' => $pendingRequisitions,
             ]);
         });
     }

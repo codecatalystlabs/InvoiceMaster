@@ -1,0 +1,71 @@
+.cb-preview { overflow-x: auto; }
+.cb-sheet-wrap { max-width: 100%; overflow: hidden; }
+.cb-sheet {
+    width: 1280px;
+    background: #fff;
+    margin: 0 auto;
+    padding: 18px 22px 30px;
+    border: 1px solid var(--line, #dce3e8);
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    font-family: 'Times New Roman', Times, serif;
+    color: #222;
+    transform-origin: top left;
+}
+.cb-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    border-bottom: 2px dashed #999;
+    padding-bottom: 10px;
+    margin-bottom: 6px;
+    gap: 12px;
+}
+.cb-logo-block { width: 220px; }
+.cb-logo-block img { max-width: 260px; max-height: 110px; object-fit: contain; display: block; }
+.cb-logo-tagline { font-size: 12px; font-weight: 600; margin-top: 4px; font-family: Arial, sans-serif; }
+.cb-title-block { flex: 1; text-align: center; padding-top: 6px; }
+.cb-badge {
+    display: inline-block;
+    background: #111;
+    color: #fff;
+    padding: 8px 30px;
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    font-family: Georgia, serif;
+    margin-bottom: 8px;
+}
+.cb-tagline { font-style: italic; font-weight: bold; font-size: 14px; margin-top: 4px; line-height: 1.3; color: #1f5fa8; }
+.cb-contact { width: 280px; font-size: 12px; border-left: 1px solid #333; padding-left: 14px; margin-top: 6px; }
+.cb-contact div { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+.cb-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; flex: 0 0 22px; border-radius: 50%;
+    border: 1.5px solid #1a5bb8; color: #1a5bb8; font-size: 11px;
+}
+.cb-icon svg { width: 12px; height: 12px; fill: none; stroke: #1a5bb8; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.cb-subheader { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 6px; }
+.cb-debit-label, .cb-credit-label { font-size: 22px; font-weight: bold; letter-spacing: 1px; font-family: Georgia, serif; }
+.cb-credit-label { letter-spacing: 2px; }
+.cb-page-no { color: #b23b1f; font-size: 20px; font-weight: bold; margin-left: 40px; font-family: Georgia, serif; }
+.cb-left-sub { display: flex; align-items: baseline; }
+.cb-sheet table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.cb-sheet th, .cb-sheet td { border: 1px solid #333; height: 26px; font-size: 12px; text-align: center; padding: 0 4px; }
+.cb-sheet th { font-family: Georgia, serif; font-weight: bold; font-size: 13px; padding: 6px 4px; }
+.cb-sheet col.cb-date { width: 6%; }
+.cb-sheet col.cb-particulars { width: 27%; }
+.cb-sheet col.cb-folio { width: 6%; }
+.cb-sheet col.cb-discount { width: 8%; }
+.cb-sheet col.cb-cash { width: 8%; }
+.cb-sheet col.cb-divider { width: 6px; }
+.cb-sheet td.cb-divider, .cb-sheet th.cb-divider { background: #222; border: none; padding: 0; }
+.cb-sheet tbody td { height: 34px; }
+.cb-sheet tbody td.cb-particulars-cell { text-align: left; white-space: normal; }
+.cb-sheet tbody td.cb-cash-cell { font-family: "IBM Plex Mono", "Courier New", monospace; font-variant-numeric: tabular-nums; font-weight: 500; }
+@media print {
+    .no-print { display: none !important; }
+    .cb-sheet { border: none; box-shadow: none; transform: none !important; width: 100%; }
+    .cb-sheet-wrap { overflow: visible; page-break-after: always; }
+    .cb-preview > .mb-4:last-child .cb-sheet-wrap { page-break-after: auto; }
+}

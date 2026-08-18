@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Dashboard') · {{ config('app.name') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
@@ -52,6 +52,16 @@
             </div>
         </div>
     </header>
+    <div class="app-menubar no-print">
+        <a href="{{ route('dashboard') }}"><u>F</u>ile</a>
+        @if(can_module('invoices'))<a href="{{ route('invoices.index') }}" class="{{ request()->routeIs('invoices.*') ? 'on' : '' }}"><u>I</u>nvoices</a>@endif
+        @if(can_module('receipts'))<a href="{{ route('receipts.index') }}" class="{{ request()->routeIs('receipts.*') ? 'on' : '' }}"><u>R</u>eceipts</a>@endif
+        @if(can_module('cashbook'))<a href="{{ route('cashbook.index') }}" class="{{ request()->routeIs('cashbook.*') ? 'on' : '' }}">Cash <u>b</u>ook</a>@endif
+        @if(can_module('ledger'))<a href="{{ route('ledger.index') }}" class="{{ request()->routeIs('ledger.*') ? 'on' : '' }}"><u>L</u>edgers</a>@endif
+        @if(can_module('reports'))<a href="{{ route('reports.financial') }}" class="{{ request()->routeIs('reports.*') ? 'on' : '' }}">Re<u>p</u>orts</a>@endif
+        @if(can_module('settings'))<a href="{{ route('settings.company') }}"><u>T</u>ools</a>@endif
+        <a href="{{ route('profile') }}"><u>W</u>indow</a>
+    </div>
     <div class="app-body">
         <aside class="sidebar" id="appSidebar">
             <div class="sidebar-solo">
@@ -68,6 +78,7 @@
             <details class="nav-group" open>
                 <summary>{{ $group['label'] }}</summary>
                 @foreach($visible as $item)
+                    @continue(! \Illuminate\Support\Facades\Route::has($item['route']))
                     <a class="nav-link {{ request()->routeIs(...($item['match'] ?? [$item['route']])) ? 'active' : '' }}" href="{{ route($item['route']) }}">
                         <i class="bi {{ $item['icon'] }}"></i> {{ $item['label'] }}
                         @if(($item['badge'] ?? null) === 'emails' && ($unreadEmails ?? 0) > 0)
@@ -75,6 +86,9 @@
                         @endif
                 @if(($item['badge'] ?? null) === 'review' && ($pendingMealReviews ?? 0) > 0)
                             <span class="badge bg-warning text-dark">{{ $pendingMealReviews }}</span>
+                        @endif
+                        @if(($item['badge'] ?? null) === 'requisitions' && ($pendingRequisitions ?? 0) > 0)
+                            <span class="badge bg-warning text-dark">{{ $pendingRequisitions }}</span>
                         @endif
                         @if($item['module'] === 'requests' && ($pendingChangeRequests ?? 0) > 0 && can_module('canteen.review'))
                             <span class="badge bg-warning text-dark">{{ $pendingChangeRequests }}</span>
@@ -86,8 +100,8 @@
         </aside>
         <div class="main">
             <div class="page-bar">
-                <h1>@yield('title', 'Dashboard')</h1>
-                <div>@yield('actions')</div>
+                <h1><span class="win-dot"></span> @yield('title', 'Dashboard')</h1>
+                <div class="page-bar-actions">@yield('actions')</div>
             </div>
             <main class="content">
                 @if(($pendingMealReviews ?? 0) > 0 && can_module('canteen.review') && !request()->routeIs('canteen.review'))
@@ -100,12 +114,83 @@
             </main>
         </div>
     </div>
+    <footer class="app-statusbar no-print">
+        <span class="sb-cell">Ready</span>
+        <span class="sb-cell">{{ $company?->name ?? config('app.name') }}</span>
+        <span class="sb-cell">{{ auth()->user()->name }} · {{ auth()->user()->role }}</span>
+        <span class="sb-cell">Period {{ now()->format('F Y') }}</span>
+        <span class="sb-cell sb-end" id="appClock">{{ now()->format('D d M Y H:i') }}</span>
+    </footer>
+</div>
+<div id="appConfirm" class="app-confirm no-print" hidden>
+    <div class="app-confirm-box" role="alertdialog" aria-modal="true" aria-labelledby="appConfirmTitle" aria-describedby="appConfirmMsg">
+        <div class="app-confirm-title" id="appConfirmTitle">Confirm</div>
+        <div class="app-confirm-body" id="appConfirmMsg"></div>
+        <div class="app-confirm-actions">
+            <button type="button" class="btn btn-primary" id="appConfirmOk">Yes</button>
+            <button type="button" class="btn btn-outline-secondary" id="appConfirmCancel">No</button>
+        </div>
+    </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.getElementById('sidebarToggle')?.addEventListener('click', () => {
     document.getElementById('appSidebar')?.classList.toggle('open');
 });
+(function () {
+    const overlay = document.getElementById('appConfirm');
+    const msgEl = document.getElementById('appConfirmMsg');
+    const okBtn = document.getElementById('appConfirmOk');
+    const cancelBtn = document.getElementById('appConfirmCancel');
+    let pending = null;
+
+    function close(result) {
+        overlay.hidden = true;
+        const resolve = pending;
+        pending = null;
+        if (resolve) resolve(result);
+    }
+
+    function ask(message) {
+        return new Promise((resolve) => {
+            pending = resolve;
+            msgEl.textContent = message;
+            overlay.hidden = false;
+            cancelBtn.focus();
+        });
+    }
+
+    okBtn?.addEventListener('click', () => close(true));
+    cancelBtn?.addEventListener('click', () => close(false));
+    overlay?.addEventListener('click', (e) => { if (e.target === overlay) close(false); });
+    document.addEventListener('keydown', (e) => {
+        if (!overlay || overlay.hidden) return;
+        if (e.key === 'Escape') { e.preventDefault(); close(false); }
+        if (e.key === 'Enter' && document.activeElement !== okBtn) { e.preventDefault(); close(false); }
+    });
+
+    document.addEventListener('submit', async (e) => {
+        const form = e.target;
+        if (!(form instanceof HTMLFormElement) || form.dataset.confirmed === '1') return;
+        const method = (form.querySelector('input[name="_method"]')?.value || form.getAttribute('method') || 'get').toUpperCase();
+        const custom = form.getAttribute('data-confirm');
+        if (!custom && method !== 'DELETE') return;
+        if (!form.checkValidity()) return;
+        e.preventDefault();
+        const ok = await ask(custom || 'Delete this record? This cannot be undone.');
+        if (!ok) return;
+        form.dataset.confirmed = '1';
+        HTMLFormElement.prototype.submit.call(form);
+    });
+})();
+(function () {
+    const el = document.getElementById('appClock');
+    if (!el) return;
+    setInterval(() => {
+        const d = new Date();
+        el.textContent = d.toLocaleString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }, 30000);
+})();
 function addItemRow(tableId) {
     const tbody = document.querySelector('#' + tableId + ' tbody');
     const i = tbody.querySelectorAll('tr').length;

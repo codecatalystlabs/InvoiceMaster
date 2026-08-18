@@ -31,6 +31,21 @@ class Receipt extends Model
         return $this->belongsTo(Company::class);
     }
 
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function servedByName(): string
+    {
+        if (auth()->check() && filled(auth()->user()->name)) {
+            return auth()->user()->name;
+        }
+        $this->loadMissing('creator');
+
+        return (string) ($this->creator?->name ?? '');
+    }
+
     public function recipientEmail(): ?string
     {
         if (filter_var((string) $this->client_contact, FILTER_VALIDATE_EMAIL)) {

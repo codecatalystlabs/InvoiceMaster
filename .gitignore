@@ -23,3 +23,6 @@ Homestead.yaml
 Thumbs.db
 *.md
 legacy/*.md
+Statement.pdf
+Statement.csv
+storage/app/statement*

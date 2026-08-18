@@ -35,12 +35,47 @@ class SettingsController extends Controller
             'services_line' => 'nullable|string',
             'tax_rate' => 'nullable|numeric',
             'logo' => 'nullable|image|max:2048',
+            'ura_tin' => 'nullable|string|max:40',
+            'efris_device_no' => 'nullable|string|max:80',
+            'whatsapp_token' => 'nullable|string',
+            'whatsapp_phone_id' => 'nullable|string|max:40',
+            'payment_provider' => 'nullable|string|max:40',
+            'yo_username' => 'nullable|string|max:80',
+            'yo_password' => 'nullable|string|max:120',
+            'yo_mode' => 'nullable|in:sandbox,live',
         ]);
+
+        $settings = $company->settings ?? [];
+        foreach (['ura_tin', 'efris_device_no', 'whatsapp_token', 'whatsapp_phone_id', 'payment_provider', 'yo_username'] as $key) {
+            if ($request->filled($key)) {
+                $settings[$key] = $request->input($key);
+            }
+        }
+        if ($request->filled('yo_mode')) {
+            $settings['yo_mode'] = $request->input('yo_mode');
+        }
+        if ($request->filled('yo_password')) {
+            $settings['yo_password'] = \App\Support\YoPayments::encryptSecret($request->input('yo_password'));
+        }
+        if (($settings['payment_provider'] ?? '') === '' && ! empty($settings['yo_username'])) {
+            $settings['payment_provider'] = 'yo';
+        }
+        $data['settings'] = $settings;
 
         if ($request->hasFile('logo')) {
             $data['logo_path'] = $request->file('logo')->store('company', 'public');
         }
-        unset($data['logo']);
+        unset(
+            $data['logo'],
+            $data['ura_tin'],
+            $data['efris_device_no'],
+            $data['whatsapp_token'],
+            $data['whatsapp_phone_id'],
+            $data['payment_provider'],
+            $data['yo_username'],
+            $data['yo_password'],
+            $data['yo_mode']
+        );
         $company->update($data);
 
         return back()->with('success', 'Company profile updated.');

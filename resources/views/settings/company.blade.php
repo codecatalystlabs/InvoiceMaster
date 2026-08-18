@@ -13,6 +13,37 @@
     <div class="mb-2"><label class="form-label">Tagline</label><input name="tagline" class="form-control" value="{{ $company->tagline }}"></div>
     <div class="mb-2"><label class="form-label">Services line</label><input name="services_line" class="form-control" value="{{ $company->services_line }}"></div>
     <div class="mb-2"><label class="form-label">Logo</label><input type="file" name="logo" class="form-control"></div>
+    <hr>
+    <h6>Payments, tax, WhatsApp</h6>
+    <div class="mb-2"><label class="form-label">URA TIN</label><input name="ura_tin" class="form-control" value="{{ $company->setting('ura_tin') }}"></div>
+    <div class="mb-2"><label class="form-label">EFRIS device number</label><input name="efris_device_no" class="form-control" value="{{ $company->setting('efris_device_no') }}"></div>
+    <div class="mb-2">
+        <label class="form-label">Payment aggregator</label>
+        <select name="payment_provider" class="form-select">
+            @php $provider = $company->setting('payment_provider', 'yo'); @endphp
+            <option value="yo" @selected($provider === 'yo')>Yo Uganda (Mobile Money collections)</option>
+            <option value="manual" @selected($provider === 'manual')>Manual confirm only</option>
+            <option value="pesapal" @selected($provider === 'pesapal')>Pesapal (webhook stub)</option>
+            <option value="flutterwave" @selected($provider === 'flutterwave')>Flutterwave (webhook stub)</option>
+        </select>
+    </div>
+    <div class="border rounded p-3 mb-3">
+        <h6 class="mb-2">Yo Uganda</h6>
+        <p class="small text-muted">Business account API from <a href="https://paymentsweb.yo.co.ug/" target="_blank" rel="noopener">paymentsweb.yo.co.ug</a>. Used to receive MTN and Airtel payments on invoice pay links.</p>
+        <div class="mb-2"><label class="form-label">API username</label><input name="yo_username" class="form-control" value="{{ $company->setting('yo_username') }}" autocomplete="off"></div>
+        <div class="mb-2"><label class="form-label">API password</label><input type="password" name="yo_password" class="form-control" placeholder="{{ $company->setting('yo_password') ? 'Saved — leave blank to keep' : 'From your Yo business account' }}" autocomplete="new-password"></div>
+        <div class="mb-2">
+            <label class="form-label">Mode</label>
+            <select name="yo_mode" class="form-select">
+                @php $yoMode = $company->setting('yo_mode', 'sandbox'); @endphp
+                <option value="sandbox" @selected($yoMode !== 'live')>Sandbox</option>
+                <option value="live" @selected($yoMode === 'live')>Live</option>
+            </select>
+        </div>
+        <p class="small text-muted mb-0">Give Yo this Instant Payment Notification URL (public HTTPS):<br><code>{{ url('/pay/webhook/yo') }}</code></p>
+    </div>
+    <div class="mb-2"><label class="form-label">WhatsApp token</label><input name="whatsapp_token" class="form-control" value="{{ $company->setting('whatsapp_token') }}"></div>
+    <div class="mb-2"><label class="form-label">WhatsApp phone ID</label><input name="whatsapp_phone_id" class="form-control" value="{{ $company->setting('whatsapp_phone_id') }}"></div>
     <button class="btn btn-primary">Save</button>
 </form>
 </div></div></div>

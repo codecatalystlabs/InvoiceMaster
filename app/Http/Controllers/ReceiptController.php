@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Receipt;
 use App\Support\Audit;
 use App\Support\CashBookService;
+use App\Support\LedgerService;
 use App\Support\DocumentExport;
 use App\Support\DocumentNumber;
 use Illuminate\Http\Request;
@@ -44,6 +45,7 @@ class ReceiptController extends Controller
             'amount' => $receipt->amount,
             'payment_method' => $receipt->payment_method,
         ]);
+        LedgerService::postReceipt($receipt);
 
         Audit::log('Create', 'Receipt', $receipt->id, $receipt->number);
 
@@ -65,6 +67,7 @@ class ReceiptController extends Controller
     public function update(Request $request, Receipt $receipt)
     {
         $receipt->update($this->validated($request));
+        LedgerService::postReceipt($receipt);
         Audit::log('Update', 'Receipt', $receipt->id, $receipt->number);
 
         return redirect()->route('receipts.show', $receipt)->with('success', 'Receipt updated.');
@@ -72,6 +75,7 @@ class ReceiptController extends Controller
 
     public function destroy(Receipt $receipt)
     {
+        LedgerService::forget('Receipt', $receipt->id);
         Audit::log('Delete', 'Receipt', $receipt->id, $receipt->number);
         $receipt->delete();
 
@@ -102,7 +106,7 @@ class ReceiptController extends Controller
             'heading' => 'Email receipt '.$receipt->number,
             'action' => route('receipts.email.send', $receipt),
             'to' => $receipt->recipientEmail(),
-            'defaultMessage' => 'Please find attached receipt '.$receipt->number.' for '.money($receipt->amount).'.',
+            'defaultMessage' => 'Please find attached receipt '.$receipt->number.' for '.money_text($receipt->amount).'.',
             'back' => route('receipts.show', $receipt),
         ]);
     }

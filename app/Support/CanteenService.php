@@ -8,6 +8,7 @@ use App\Models\CanteenMonthClose;
 use App\Models\ChartOfAccount;
 use App\Models\Expense;
 use App\Models\User;
+use App\Support\LedgerService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -87,7 +88,7 @@ class CanteenService
                 $isNew ? 'Declare' : 'Resubmit',
                 'CanteenMeal',
                 $meal->id,
-                $user->name.' declared '.$date->toDateString().' · '.money($total),
+                $user->name.' declared '.$date->toDateString().' · '.money_text($total),
                 $total,
                 ['module' => 'canteen']
             );
@@ -206,8 +207,9 @@ class CanteenService
                 'closed_at' => now(),
             ]);
             $expense->update(['source_id' => $close->id]);
+            LedgerService::postExpense($expense->fresh());
 
-            Audit::log('CloseMonth', 'CanteenMonth', $close->id, $label.' posted as '.$expense->expense_number.' · '.money($total), $total, ['module' => 'canteen.close']);
+            Audit::log('CloseMonth', 'CanteenMonth', $close->id, $label.' posted as '.$expense->expense_number.' · '.money_text($total), $total, ['module' => 'canteen.close']);
 
             return $close->load('expense');
         });

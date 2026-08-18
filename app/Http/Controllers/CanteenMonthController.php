@@ -75,6 +75,6 @@ class CanteenMonthController extends Controller
             ? redirect()->route('expenses.show', $close->expense_id)
             : redirect()->route('canteen.month', ['year' => $close->year, 'month' => $close->month]);
 
-        return $target->with('success', 'Month closed. Canteen total posted as '.($close->expense->expense_number ?? money($close->total)).'.');
+        return $target->with('success', 'Month closed. Canteen total posted as '.($close->expense->expense_number ?? money_text($close->total)).'.');
     }
 }

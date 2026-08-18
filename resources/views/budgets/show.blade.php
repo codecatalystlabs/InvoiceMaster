@@ -21,7 +21,7 @@
     <div class="col-md-3"><button class="btn btn-primary w-100">Add allocation</button></div>
 </form>
 @endif
-<div class="card"><table class="table mb-0"><thead><tr><th>Line</th><th>Category</th><th>Allocated</th><th>Committed</th><th>Spent</th><th>Available</th></tr></thead><tbody>
+<div class="card"><table class="table mb-0"><thead><tr><th>Line</th><th>Category</th><th>Allocated</th><th>Committed</th><th>Spent</th><th>Available</th><th></th></tr></thead><tbody>
 @forelse($budget->allocations as $line)
 <tr>
     <td>{{ $line->name }}</td>
@@ -30,7 +30,15 @@
     <td>{{ money($line->committed()) }}</td>
     <td>{{ money($line->spent()) }}</td>
     <td>{{ money($line->available()) }}</td>
+    <td>
+        @if($budget->status === 'approved' && $line->requisitions->isEmpty() && $line->topups->isEmpty())
+            <form method="POST" action="{{ route('budgets.allocations.destroy', $line) }}" data-confirm="Remove this unused allocation?">@csrf @method('DELETE')
+                <button class="btn btn-sm btn-outline-danger">Remove</button>
+            </form>
+        @endif
+    </td>
 </tr>
-@empty<tr><td colspan="6" class="text-muted">No allocations yet.</td></tr>@endforelse
+@empty<tr><td colspan="7" class="text-muted">No allocations yet.</td></tr>@endforelse
 </tbody></table></div>
+<p class="small text-muted mt-2 mb-0">Petty cash lines fund the tin (top-up). Other lines cap staff requisitions. Committed = approved or in-flight requests. Spent = closed accountability or tin top-ups.</p>
 @endsection

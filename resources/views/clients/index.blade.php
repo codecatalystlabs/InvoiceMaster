@@ -13,8 +13,8 @@
     <td>{{ $c->name }}</td><td>{{ $c->email }}</td><td>{{ $c->phone }}</td><td>{{ $c->company }}</td>
     <td>
         <div class="row-actions">
-            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editClient{{ $c->id }}" title="Edit"><i class="bi bi-pencil"></i></button>
-            <form method="POST" action="{{ route('clients.destroy', $c) }}" onsubmit="return confirm('Delete client {{ $c->name }}?')">@csrf @method('DELETE')
+            <a class="btn btn-sm btn-outline-secondary" href="{{ $c->portalUrl() }}" target="_blank" title="Client portal">Portal</a>
+            <form method="POST" action="{{ route('clients.destroy', $c) }}" data-confirm="Delete client {{ $c->name }}? This cannot be undone.">@csrf @method('DELETE')
                 <button class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
             </form>
         </div>

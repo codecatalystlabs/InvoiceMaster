@@ -15,6 +15,7 @@ body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 11pt; color: #222
 .items-table td { padding: 7px 10px; border-bottom: 1px solid #ddd; font-size: 10pt; }
 .items-table tfoot td { font-weight: bold; padding: 8px 10px; border-bottom: none; }
 .total-row td { background-color: #e7f1ff; font-size: 12pt; }
+.money { font-family: "Courier New", Courier, monospace; font-weight: 600; }
 .status-badge { color: #fff; padding: 4px 12px; font-size: 9pt; }
 .due-date-box { background-color: #fff3cd; border: 2px solid #ffc107; padding: 12px; margin: 14px 0; text-align: center; }
 .payment-notice { background-color: #fff3cd; padding: 12px; border-left: 4px solid #ffc107; margin: 16px 0; font-size: 10pt; }

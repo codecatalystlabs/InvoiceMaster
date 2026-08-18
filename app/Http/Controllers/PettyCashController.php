@@ -51,10 +51,22 @@ class PettyCashController extends Controller
             'amount' => 'required|numeric|min:0.01',
             'description' => 'required|string|max:200',
             'type' => 'required|in:allocation,replenish',
+            'budget_allocation_id' => 'nullable|exists:budget_allocations,id',
         ]);
-        PettyCashService::post($pettyCashFund, $data['type'], (float) $data['amount'], $data['description']);
+        if ($data['type'] === 'allocation' && empty($data['budget_allocation_id'])) {
+            return back()->with('error', 'Choose the petty cash budget line this top-up comes from.');
+        }
+        PettyCashService::post(
+            $pettyCashFund,
+            $data['type'],
+            (float) $data['amount'],
+            $data['description'],
+            null,
+            null,
+            $data['budget_allocation_id'] ?? null
+        );
 
-        return back()->with('success', 'Fund topped up.');
+        return back()->with('success', 'Fund topped up. Ledger: petty cash debit, bank credit.');
     }
 
     public function createForm()

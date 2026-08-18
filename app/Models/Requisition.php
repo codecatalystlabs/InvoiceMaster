@@ -17,7 +17,7 @@ class Requisition extends Model
         'initiated_by', 'initiated_at', 'approved_by', 'approved_at',
         'rejected_by', 'rejected_at', 'reject_reason',
         'disbursed_by', 'disbursed_at', 'accounted_at', 'accountability_notes',
-        'accounted_amount', 'closed_by', 'closed_at', 'created_by',
+        'accounted_amount', 'closed_by', 'closed_at', 'expense_id', 'created_by',
     ];
 
     protected function casts(): array
@@ -67,6 +67,20 @@ class Requisition extends Model
     public function remainder(): float
     {
         return max(0, (float) $this->amount - (float) $this->accounted_amount);
+    }
+
+    public function usesTin(): bool
+    {
+        return $this->type === 'petty_cash' || (bool) $this->petty_cash_fund_id;
+    }
+
+    public static function reviewerCanAct(\App\Models\User $user, self $req): bool
+    {
+        if ($user->canAccess('requisitions.review')) {
+            return true;
+        }
+
+        return (int) $req->department?->head_user_id === (int) $user->id;
     }
 
     public static function statuses(): array

@@ -48,7 +48,7 @@
                 </p>
             @endif
             @if(can_module('canteen.review') && $meal->status === 'pending')
-                <form method="POST" action="{{ route('canteen.refuse', $meal) }}" class="mt-3">@csrf
+                <form method="POST" action="{{ route('canteen.refuse', $meal) }}" class="mt-3" data-confirm="Refuse this meal declaration?">@csrf
                     <textarea name="review_notes" class="form-control mb-2" placeholder="Reason to refuse" required></textarea>
                     <button class="btn btn-outline-danger w-100">Refuse</button>
                 </form>

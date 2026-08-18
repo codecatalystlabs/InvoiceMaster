@@ -23,7 +23,7 @@
         · {{ money($close->total) }}
     </div>
 @else
-    <form method="POST" action="{{ route('canteen.month.close') }}" class="mb-3" onsubmit="return confirm('Post approved meals for this month as one expense? Pending entries must be cleared first.')">
+    <form method="POST" action="{{ route('canteen.month.close') }}" class="mb-3" data-confirm="Post approved meals for this month as one expense? Pending entries must be cleared first.">
         @csrf
         <input type="hidden" name="year" value="{{ $year }}">
         <input type="hidden" name="month" value="{{ $month }}">

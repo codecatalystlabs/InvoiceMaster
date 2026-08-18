@@ -10,7 +10,7 @@
             <a href="{{ route('quotations.edit', $quotation) }}" class="btn btn-primary">Edit</a>
             <form method="POST" action="{{ route('quotations.convert', $quotation) }}">@csrf<button class="btn btn-success">Convert to invoice</button></form>
         @endif
-        <form method="POST" action="{{ route('quotations.destroy', $quotation) }}" onsubmit="return confirm('Delete this quotation?')">@csrf @method('DELETE')
+        <form method="POST" action="{{ route('quotations.destroy', $quotation) }}" data-confirm="Delete quotation {{ $quotation->quotation_number }}? This cannot be undone.">@csrf @method('DELETE')
             <button class="btn btn-outline-danger">Delete</button>
         </form>
     </div>

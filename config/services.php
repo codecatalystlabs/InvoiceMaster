@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'yo' => [
+        'username' => env('YO_API_USERNAME'),
+        'password' => env('YO_API_PASSWORD'),
+        'mode' => env('YO_MODE', 'sandbox'),
+        'sandbox_url' => env('YO_SANDBOX_URL', 'https://sandbox.yo.co.ug/services/yopaymentsdev/task.php'),
+        'live_url' => env('YO_LIVE_URL', 'https://paymentsapi1.yo.co.ug/ybs/task.php'),
+    ],
+
 ];

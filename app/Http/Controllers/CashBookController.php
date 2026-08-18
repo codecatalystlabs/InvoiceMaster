@@ -7,6 +7,7 @@ use App\Models\ChartOfAccount;
 use App\Support\Audit;
 use App\Support\CashBookService;
 use App\Support\DocumentExport;
+use App\Support\LedgerService;
 use Illuminate\Http\Request;
 
 class CashBookController extends Controller
@@ -46,6 +47,7 @@ class CashBookController extends Controller
     {
         $data = $this->validated($request);
         $entry = CashBookService::record($data);
+        LedgerService::postCashBook($entry);
         Audit::log('Create', 'CashBook', $entry->id, $entry->number);
 
         return redirect()->route('cashbook.index')->with('success', 'Cash book entry recorded.');
@@ -53,6 +55,8 @@ class CashBookController extends Controller
 
     public function show(CashBookEntry $cashbook)
     {
+        $cashbook->loadMissing('company');
+
         return view('cashbook.show', ['entry' => $cashbook]);
     }
 
@@ -78,6 +82,7 @@ class CashBookController extends Controller
         $data = $this->validated($request);
         $cashbook->update($data);
         CashBookService::recomputeFrom(auth()->user()->company_id, $cashbook->id);
+        LedgerService::postCashBook($cashbook);
         Audit::log('Update', 'CashBook', $cashbook->id, $cashbook->number);
 
         return redirect()->route('cashbook.index')->with('success', 'Cash book entry updated.');
@@ -85,6 +90,7 @@ class CashBookController extends Controller
 
     public function destroy(CashBookEntry $cashbook)
     {
+        LedgerService::forget('Cashbook', $cashbook->id);
         $id = $cashbook->id;
         $companyId = $cashbook->company_id;
         $cashbook->delete();

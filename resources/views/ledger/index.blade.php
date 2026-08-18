@@ -4,7 +4,13 @@
 <div class="d-flex justify-content-between mb-3">
     <h2 class="h4 mb-0">General Ledger</h2>
     <div class="d-flex gap-2">
+        <a href="{{ route('ledger.preview', request()->query()) }}" class="btn btn-outline-primary">View ledger sheet</a>
+        <a href="{{ route('ledger.pdf', request()->query()) }}" class="btn btn-outline-danger">Download PDF</a>
         <a href="{{ route('exports.download','ledger') }}" class="btn btn-outline-success">CSV</a>
+        <form method="POST" action="{{ route('ledger.rebuild') }}" data-confirm="Rebuild the ledger from invoices, receipts, expenses, and cash book?">
+            @csrf
+            <button class="btn btn-outline-secondary">Rebuild ledger</button>
+        </form>
         <button type="button" class="btn btn-secondary" onclick="window.print()">Print</button>
     </div>
 </div>

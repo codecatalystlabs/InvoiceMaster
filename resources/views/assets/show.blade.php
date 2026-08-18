@@ -5,7 +5,7 @@
     <a href="{{ route('assets.index') }}" class="btn btn-secondary">Back</a>
     <div class="d-flex gap-2">
         <a href="{{ route('assets.edit',$asset) }}" class="btn btn-primary">Edit</a>
-        <form method="POST" action="{{ route('assets.destroy', $asset) }}" onsubmit="return confirm('Delete this asset?')">@csrf @method('DELETE')
+        <form method="POST" action="{{ route('assets.destroy', $asset) }}" data-confirm="Delete asset {{ $asset->asset_number }}? This cannot be undone.">@csrf @method('DELETE')
             <button class="btn btn-outline-danger">Delete</button>
         </form>
     </div>

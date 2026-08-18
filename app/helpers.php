@@ -1,8 +1,9 @@
 <?php
 
 use App\Models\Company;
+use Illuminate\Support\HtmlString;
 
-function money($amount, $company = null): string
+function money_text($amount, $company = null): string
 {
     $symbol = 'UGX';
     $company = $company
@@ -13,6 +14,11 @@ function money($amount, $company = null): string
     }
 
     return $symbol.' '.number_format((float) $amount, 0);
+}
+
+function money($amount, $company = null): HtmlString
+{
+    return new HtmlString('<span class="money">'.e(money_text($amount, $company)).'</span>');
 }
 
 function status_badge(string $status): string

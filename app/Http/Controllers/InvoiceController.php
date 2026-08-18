@@ -9,6 +9,7 @@ use App\Support\Audit;
 use App\Support\CashBookService;
 use App\Support\DocumentExport;
 use App\Support\DocumentNumber;
+use App\Support\LedgerService;
 use App\Support\LineTotals;
 use Illuminate\Http\Request;
 
@@ -82,6 +83,7 @@ class InvoiceController extends Controller
 
     public function destroy(Invoice $invoice)
     {
+        LedgerService::forget('Invoice', $invoice->id);
         Audit::log('Delete', 'Invoice', $invoice->id, $invoice->invoice_number);
         $invoice->delete();
 
@@ -90,18 +92,14 @@ class InvoiceController extends Controller
 
     public function markPaid(Invoice $invoice)
     {
-        $invoice->update(['status' => 'Paid']);
-        CashBookService::record([
-            'entry_date' => now()->toDateString(),
-            'description' => 'Payment received for '.$invoice->invoice_number,
-            'type' => 'debit',
-            'amount' => $invoice->total,
-            'invoice_id' => $invoice->id,
-            'payment_method' => 'Cash',
+        \App\Support\PaymentService::record($invoice, [
+            'amount' => $invoice->outstanding(),
+            'method' => 'cash',
+            'reference' => 'Marked paid',
+            'provider' => 'manual',
         ]);
-        Audit::log('Paid', 'Invoice', $invoice->id, $invoice->invoice_number);
 
-        return back()->with('success', 'Invoice marked as paid and cash book updated.');
+        return back()->with('success', 'Invoice marked as paid. Receipt and ledger updated.');
     }
 
     public function pdf(Request $request, Invoice $invoice)
@@ -121,7 +119,7 @@ class InvoiceController extends Controller
             'heading' => 'Email invoice '.$invoice->invoice_number,
             'action' => route('invoices.email.send', $invoice),
             'to' => $invoice->recipientEmail(),
-            'defaultMessage' => 'Please find attached invoice '.$invoice->invoice_number.' amounting to '.money($invoice->total).'.',
+            'defaultMessage' => 'Please find attached invoice '.$invoice->invoice_number.' amounting to '.money_text($invoice->total).'.',
             'back' => route('invoices.show', $invoice),
         ]);
     }
@@ -178,7 +176,12 @@ class InvoiceController extends Controller
         ]);
         if ($isNew) {
             $invoice->invoice_number = DocumentNumber::next('INV', 'invoices', 'invoice_number', auth()->user()->company_id);
+            $invoice->pay_token = \Illuminate\Support\Str::random(48);
         }
+        $invoice->project_id = $request->project_id ?: null;
+        $invoice->is_recurring = $request->boolean('is_recurring');
+        $invoice->recurrence_frequency = $request->get('recurrence_frequency');
+        $invoice->next_recurrence_date = $request->get('next_recurrence_date');
         $invoice->save();
         $invoice->items()->delete();
         foreach ($calc['items'] as $item) {
@@ -189,6 +192,7 @@ class InvoiceController extends Controller
                 'total' => $item['total'],
             ]);
         }
+        LedgerService::postInvoice($invoice);
 
         return $invoice;
     }

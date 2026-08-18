@@ -105,6 +105,8 @@ class ImportLegacyDataCommand extends Command
 
         CashBookService::recomputeAll($this->company->id);
         $this->info('Cash book balances recomputed.');
+        $ledgerCount = \App\Support\LedgerService::rebuild($this->company->id);
+        $this->info("  ledger: $ledgerCount lines rebuilt from invoices, receipts, expenses, and cash book.");
         $this->info('Done. Open the app and confirm receipts, cash book, and ledger.');
 
         return self::SUCCESS;

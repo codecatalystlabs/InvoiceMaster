@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\Quotation;
 use App\Models\Receipt;
+use Illuminate\Support\Collection;
 use Barryvdh\DomPDF\Facade\Pdf;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\PhpWord;
@@ -52,6 +53,20 @@ class DocumentExport
 
         return Pdf::loadView('documents.cashbook', compact('entry', 'company'))
             ->setPaper('a4', 'landscape')
+            ->setOptions(self::pdfOptions(), true);
+    }
+
+    public static function ledgerPdf(Collection $pages, Company $company, string $title = 'LEDGER')
+    {
+        return Pdf::loadView('documents.ledger', compact('pages', 'company', 'title'))
+            ->setPaper('a4', 'landscape')
+            ->setOptions(self::pdfOptions(), true);
+    }
+
+    public static function payslipPdf(\App\Models\PayrollItem $item, Company $company)
+    {
+        return Pdf::loadView('documents.payslip', compact('item', 'company'))
+            ->setPaper('a4', 'portrait')
             ->setOptions(self::pdfOptions(), true);
     }
 
@@ -121,7 +136,7 @@ class DocumentExport
         $topRow = $section->addTable(['borderSize' => 0, 'cellMargin' => 60, 'alignment' => JcTable::CENTER]);
         $topRow->addRow();
         $noCell = $topRow->addCell(3000, ['borderSize' => 12, 'borderColor' => '111111', 'valign' => 'center']);
-        $noCell->addText('No.   '.$receipt->number, ['bold' => true, 'color' => 'c0392b', 'italic' => true, 'size' => 13]);
+        $noCell->addText('No.   '.$receipt->shortNumber(), ['bold' => true, 'color' => 'c0392b', 'italic' => true, 'size' => 13]);
         $pillCell = $topRow->addCell(3000, ['valign' => 'center']);
         $pillCell->addText('RECEIPT', ['bold' => true, 'color' => 'FFFFFF', 'size' => 13, 'name' => 'Arial'], [
             'alignment' => Jc::CENTER, 'shading' => ['fill' => '111111'],
@@ -135,7 +150,7 @@ class DocumentExport
         $section->addTextBreak(1);
         $section->addText('Telephone:  '.$receipt->client_contact, $fieldValue);
         $section->addTextBreak(1);
-        $section->addText('The amount of Shillings Shs/USD:  '.money($receipt->amount, $company), $fieldValue);
+        $section->addText('The amount of Shillings Shs/USD:  '.money_text($receipt->amount, $company), $fieldValue);
         $section->addTextBreak(1);
         $section->addText('Being payment of:  '.$receipt->description, $fieldValue);
         $section->addTextBreak(1);
@@ -145,10 +160,10 @@ class DocumentExport
         $bottomRow = $section->addTable(['borderSize' => 0, 'cellMargin' => 60]);
         $bottomRow->addRow();
         $amountCell = $bottomRow->addCell(3200, ['borderSize' => 12, 'borderColor' => '111111', 'valign' => 'center']);
-        $amountCell->addText(money($receipt->amount, $company), ['bold' => true, 'color' => 'c0392b', 'size' => 13], ['alignment' => Jc::CENTER]);
+        $amountCell->addText(money_text($receipt->amount, $company), ['bold' => true, 'color' => 'c0392b', 'size' => 13], ['alignment' => Jc::CENTER]);
         $bottomRow->addCell(3200)->addText('');
         $sigCell = $bottomRow->addCell(3200, ['valign' => 'bottom']);
-        $sigCell->addText('Signature: ____________________', ['size' => 11]);
+        $sigCell->addText('Served by: '.$receipt->servedByName(), ['size' => 11]);
         $section->addTextBreak(1);
         $section->addText('With thanks', ['italic' => true, 'size' => 12], ['alignment' => Jc::CENTER]);
         $section->addTextBreak(1);
@@ -185,15 +200,15 @@ class DocumentExport
         $section->addText('Date: '.$invoice->date?->format('M d, Y').'    Due: '.$invoice->due_date?->format('M d, Y'));
         $section->addTextBreak();
         foreach ($invoice->items as $item) {
-            $section->addText($item->item_name.'  x '.$item->qty.'    '.money($item->total, $company));
+            $section->addText($item->item_name.'  x '.$item->qty.'    '.money_text($item->total, $company));
         }
         $section->addTextBreak();
-        $section->addText('Subtotal: '.money($invoice->subtotal, $company));
-        $section->addText('Tax: '.money($invoice->tax, $company));
+        $section->addText('Subtotal: '.money_text($invoice->subtotal, $company));
+        $section->addText('Tax: '.money_text($invoice->tax, $company));
         if ((float) $invoice->discount > 0) {
-            $section->addText('Discount: -'.money($invoice->discount, $company));
+            $section->addText('Discount: -'.money_text($invoice->discount, $company));
         }
-        $section->addText('AMOUNT DUE: '.money($invoice->total, $company), ['bold' => true, 'size' => 13]);
+        $section->addText('AMOUNT DUE: '.money_text($invoice->total, $company), ['bold' => true, 'size' => 13]);
         if ($invoice->notes) {
             $section->addTextBreak();
             $section->addText('Notes: '.$invoice->notes);

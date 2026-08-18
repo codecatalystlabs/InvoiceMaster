@@ -29,6 +29,7 @@ class ClientController extends Controller
             'company' => 'nullable|string|max:100',
             'address' => 'nullable|string',
         ]);
+        $data['portal_token'] = \Illuminate\Support\Str::random(48);
         $client = Client::create($data);
         Audit::log('Create', 'Client', $client->id, $client->name);
 

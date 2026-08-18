@@ -24,7 +24,7 @@
         <td>{{ $item->is_active ? 'Yes' : 'No' }}</td>
         <td>
             <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editItem{{ $item->id }}">Edit</button>
-            <form method="POST" action="{{ route('canteen.items.destroy', $item) }}" class="d-inline" onsubmit="return confirm('Remove {{ $item->name }}?')">@csrf @method('DELETE')
+            <form method="POST" action="{{ route('canteen.items.destroy', $item) }}" class="d-inline" data-confirm="Remove {{ $item->name }} from the catalog? This cannot be undone.">@csrf @method('DELETE')
                 <button class="btn btn-sm btn-outline-danger">Delete</button>
             </form>
         </td>

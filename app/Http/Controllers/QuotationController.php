@@ -89,6 +89,8 @@ class QuotationController extends Controller
             'total' => $quotation->total,
             'status' => 'Unpaid',
             'notes' => $quotation->notes,
+            'pay_token' => \Illuminate\Support\Str::random(48),
+            'project_id' => $quotation->project_id,
         ]);
         foreach ($quotation->items as $item) {
             InvoiceItem::create([
@@ -100,6 +102,7 @@ class QuotationController extends Controller
             ]);
         }
         $quotation->update(['status' => 'Converted']);
+        \App\Support\LedgerService::postInvoice($invoice);
         Audit::log('Convert', 'Quotation', $quotation->id, 'Converted to '.$invoice->invoice_number);
 
         return redirect()->route('invoices.show', $invoice)->with('success', 'Quotation converted to invoice.');
@@ -122,7 +125,7 @@ class QuotationController extends Controller
             'heading' => 'Email quotation '.$quotation->quotation_number,
             'action' => route('quotations.email.send', $quotation),
             'to' => $quotation->recipientEmail(),
-            'defaultMessage' => 'Please find attached quotation '.$quotation->quotation_number.' amounting to '.money($quotation->total).'.',
+            'defaultMessage' => 'Please find attached quotation '.$quotation->quotation_number.' amounting to '.money_text($quotation->total).'.',
             'back' => route('quotations.show', $quotation),
         ]);
     }

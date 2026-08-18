@@ -15,7 +15,12 @@ class RequisitionController extends Controller
     {
         $user = auth()->user();
         $rows = Requisition::with(['requester', 'department', 'allocation'])
-            ->when($user->seesOnlyOwnRecords(), fn ($q) => $q->where('user_id', $user->id))
+            ->when(! $user->canAccess('requisitions.review'), function ($q) use ($user) {
+                $deptIds = Department::where('head_user_id', $user->id)->pluck('id');
+                $q->where(function ($qq) use ($user, $deptIds) {
+                    $qq->where('user_id', $user->id)->orWhereIn('department_id', $deptIds);
+                });
+            })
             ->when($request->status, fn ($q) => $q->where('status', $request->status))
             ->latest()
             ->paginate(20)
@@ -28,7 +33,10 @@ class RequisitionController extends Controller
     {
         return view('requisitions.form', [
             'departments' => Department::where('is_active', true)->orderBy('name')->get(),
-            'allocations' => BudgetAllocation::with('budget.department')->whereHas('budget', fn ($q) => $q->where('status', 'approved')->where('year', now()->year))->get(),
+            'allocations' => BudgetAllocation::with('budget.department')
+                ->where('category', '!=', 'petty_cash')
+                ->whereHas('budget', fn ($q) => $q->where('status', 'approved')->where('year', now()->year))
+                ->get(),
             'funds' => PettyCashFund::where('is_active', true)->orderBy('name')->get(),
         ]);
     }
@@ -60,7 +68,7 @@ class RequisitionController extends Controller
 
     public function initiate(Request $request, Requisition $requisition)
     {
-        abort_unless(auth()->user()->canAccess('requisitions.review'), 403);
+        abort_unless(Requisition::reviewerCanAct(auth()->user(), $requisition), 403);
         RequisitionService::initiate($requisition, auth()->user(), $request->input('notes'));
 
         return back()->with('success', 'Requisition initiated.');
@@ -68,7 +76,7 @@ class RequisitionController extends Controller
 
     public function approve(Request $request, Requisition $requisition)
     {
-        abort_unless(auth()->user()->canAccess('requisitions.review'), 403);
+        abort_unless(Requisition::reviewerCanAct(auth()->user(), $requisition), 403);
         RequisitionService::approve($requisition, auth()->user(), $request->input('notes'));
 
         return back()->with('success', 'Requisition approved.');
@@ -76,7 +84,7 @@ class RequisitionController extends Controller
 
     public function reject(Request $request, Requisition $requisition)
     {
-        abort_unless(auth()->user()->canAccess('requisitions.review'), 403);
+        abort_unless(Requisition::reviewerCanAct(auth()->user(), $requisition), 403);
         $data = $request->validate(['reject_reason' => 'required|string|max:500']);
         RequisitionService::reject($requisition, auth()->user(), $data['reject_reason']);
 
@@ -85,7 +93,7 @@ class RequisitionController extends Controller
 
     public function disburse(Request $request, Requisition $requisition)
     {
-        abort_unless(auth()->user()->canAccess('petty-cash') || auth()->user()->canAccess('requisitions.review'), 403);
+        abort_unless(auth()->user()->canAccess('petty-cash') || Requisition::reviewerCanAct(auth()->user(), $requisition), 403);
         $data = $request->validate([
             'petty_cash_fund_id' => 'nullable|exists:petty_cash_funds,id',
             'disbursement_method' => 'nullable|string|max:40',
@@ -103,12 +111,12 @@ class RequisitionController extends Controller
     public function account(Request $request, Requisition $requisition)
     {
         $this->authorizeReq($requisition);
-        abort_unless($requisition->user_id === auth()->id() || auth()->user()->canAccess('requisitions.review'), 403);
+        abort_unless($requisition->user_id === auth()->id() || Requisition::reviewerCanAct(auth()->user(), $requisition), 403);
         $data = $request->validate([
             'notes' => 'nullable|string',
             'lines' => 'required|array|min:1',
-            'lines.*.description' => 'required|string',
-            'lines.*.amount' => 'required|numeric|min:0.01',
+            'lines.*.description' => 'nullable|string',
+            'lines.*.amount' => 'nullable|numeric|min:0',
             'lines.*.spent_on' => 'nullable|date',
             'lines.*.receipt' => 'nullable|file|max:4096',
         ]);
@@ -125,14 +133,17 @@ class RequisitionController extends Controller
 
     public function close(Request $request, Requisition $requisition)
     {
-        abort_unless(auth()->user()->canAccess('requisitions.review'), 403);
+        abort_unless(Requisition::reviewerCanAct(auth()->user(), $requisition), 403);
         RequisitionService::close($requisition, auth()->user(), $request->input('notes'));
 
-        return back()->with('success', 'Accountability accepted. Petty cash updated.');
+        return back()->with('success', 'Accountability accepted. Spent cash is an expense; unspent cash is back in the tin.');
     }
 
     protected function authorizeReq(Requisition $requisition): void
     {
+        if (Requisition::reviewerCanAct(auth()->user(), $requisition)) {
+            return;
+        }
         if (auth()->user()->seesOnlyOwnRecords()) {
             abort_unless($requisition->user_id === auth()->id(), 403);
         }

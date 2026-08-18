@@ -11,7 +11,7 @@ class PettyCashEntry extends Model
     use BelongsToCompany;
 
     protected $fillable = [
-        'company_id', 'petty_cash_fund_id', 'requisition_id', 'number',
+        'company_id', 'petty_cash_fund_id', 'requisition_id', 'budget_allocation_id', 'number',
         'entry_date', 'type', 'description', 'amount', 'balance_after', 'created_by',
     ];
 
