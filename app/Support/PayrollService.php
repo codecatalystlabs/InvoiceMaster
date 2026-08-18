@@ -32,11 +32,17 @@ class PayrollService
         $lines = [];
         $totals = [
             'gross' => 0, 'paye' => 0, 'nssf_employee' => 0, 'nssf_employer' => 0,
-            'lst' => 0, 'canteen' => 0, 'net' => 0,
+            'lst' => 0, 'canteen' => 0, 'other_deductions' => 0, 'net' => 0,
         ];
 
         foreach ($employees as $employee) {
-            $line = self::lineFor($employee, (float) ($canteenByUser[$employee->user_id] ?? 0));
+            $line = self::lineFor(
+                $employee,
+                (float) ($canteenByUser[$employee->user_id] ?? 0),
+                $companyId,
+                $year,
+                $month
+            );
             $lines[] = $line;
             foreach ($totals as $key => $_) {
                 $totals[$key] += $line[$key];
@@ -73,7 +79,7 @@ class PayrollService
                 'nssf_employer' => $preview['totals']['nssf_employer'],
                 'lst' => $preview['totals']['lst'],
                 'canteen' => $preview['totals']['canteen'],
-                'other_deductions' => 0,
+                'other_deductions' => $preview['totals']['other_deductions'],
                 'net' => $preview['totals']['net'],
                 'created_by' => $userId,
             ]);
@@ -114,7 +120,7 @@ class PayrollService
         $canteen = self::account('5160', $companyId);
 
         $lines = [];
-        $salaryDebit = (float) $run->gross + (float) $run->nssf_employer;
+        $salaryDebit = (float) $run->gross + (float) $run->nssf_employer - (float) $run->other_deductions;
         if ($salaries) {
             $lines[] = ['account_id' => $salaries->id, 'entry_type' => 'Debit', 'amount' => $salaryDebit];
         }
@@ -145,7 +151,7 @@ class PayrollService
         );
     }
 
-    protected static function lineFor(Employee $employee, float $canteen): array
+    protected static function lineFor(Employee $employee, float $canteen, int $companyId, int $year, int $month): array
     {
         $gross = $employee->gross();
         $nssfEmp = PayrollTax::nssfEmployee($gross);
@@ -153,8 +159,12 @@ class PayrollService
         $chargeable = max(0, $gross - $nssfEmp);
         $paye = PayrollTax::paye($chargeable);
         $lst = PayrollTax::lst($gross);
-        $canteen = min($canteen, max(0, $gross - $nssfEmp - $paye - $lst));
-        $net = $gross - $nssfEmp - $paye - $lst - $canteen;
+        $from = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+        $working = max(1, AttendanceService::workingDaysBetween($companyId, $from, $from->copy()->endOfMonth()));
+        $unpaidDays = LeaveService::unpaidDays($employee, $year, $month);
+        $other = round(((float) $employee->basic_salary / $working) * $unpaidDays, 0);
+        $canteen = min($canteen, max(0, $gross - $nssfEmp - $paye - $lst - $other));
+        $net = $gross - $nssfEmp - $paye - $lst - $canteen - $other;
 
         return [
             'employee_id' => $employee->id,
@@ -166,8 +176,9 @@ class PayrollService
             'nssf_employer' => $nssfEr,
             'lst' => $lst,
             'canteen' => $canteen,
-            'other_deductions' => 0,
+            'other_deductions' => $other,
             'net' => $net,
+            'meta' => ['unpaid_leave_days' => $unpaidDays],
         ];
     }
 

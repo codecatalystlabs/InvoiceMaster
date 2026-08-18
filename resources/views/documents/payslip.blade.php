@@ -22,6 +22,9 @@ td { padding: 4px 0; }
 <tr><td>NSSF (employee 5%)</td><td style="text-align:right;">({{ money($item->nssf_employee, $company) }})</td></tr>
 <tr><td>Local Service Tax</td><td style="text-align:right;">({{ money($item->lst, $company) }})</td></tr>
 <tr><td>Canteen recovery</td><td style="text-align:right;">({{ money($item->canteen, $company) }})</td></tr>
+@if($item->other_deductions > 0)
+<tr><td>Other deductions{{ !empty($item->meta['unpaid_leave_days']) ? ' (unpaid leave '.$item->meta['unpaid_leave_days'].' day(s))' : '' }}</td><td style="text-align:right;">({{ money($item->other_deductions, $company) }})</td></tr>
+@endif
 <tr><td class="total">Net pay</td><td class="total" style="text-align:right;">{{ money($item->net, $company) }}</td></tr>
 </table>
 <p class="muted">Employer NSSF (10%): {{ money($item->nssf_employer, $company) }} · Paid via {{ $item->employee->pay_method }} {{ $item->employee->pay_account }}</p>

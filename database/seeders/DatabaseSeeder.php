@@ -61,5 +61,6 @@ class DatabaseSeeder extends Seeder
         ChartOfAccount::seedDefaults($company->id);
         \App\Models\CanteenItem::seedDefaults($company->id);
         \App\Models\Department::seedDefaults($company->id);
+        \App\Models\LeaveType::seedDefaults($company->id);
     }
 }

@@ -79,6 +79,7 @@ class AuthController extends Controller
         ChartOfAccount::seedDefaults($company->id);
         \App\Models\CanteenItem::seedDefaults($company->id);
         \App\Models\Department::seedDefaults($company->id);
+        \App\Models\LeaveType::seedDefaults($company->id);
 
         Auth::login($user);
         Audit::log('Register', 'User', $user->id, 'Company created');

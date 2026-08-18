@@ -52,6 +52,11 @@ class User extends Authenticatable
         return $this->hasMany(CanteenMeal::class);
     }
 
+    public function employee(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Employee::class);
+    }
+
     public function hasRole(string|array $roles): bool
     {
         $roles = (array) $roles;

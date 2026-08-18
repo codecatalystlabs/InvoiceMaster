@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->validateCsrfTokens(except: [
             'pay/webhook/*',
+            'iclock/*',
+            'api/v1/attendance/punches',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

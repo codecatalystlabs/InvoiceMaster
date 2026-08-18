@@ -21,8 +21,14 @@ use App\Http\Controllers\EmailController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\HolidayController;
+use App\Http\Controllers\HrController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\LedgerController;
+use App\Http\Controllers\MachinePunchController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AttendanceDeviceController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PettyCashController;
 use App\Http\Controllers\PortalController;
@@ -72,6 +78,10 @@ Route::get('/pay/{token}/status', [PublicPaymentController::class, 'status'])->n
 Route::get('/pay/{token}', [PublicPaymentController::class, 'show'])->name('pay.show');
 Route::post('/pay/{token}', [PublicPaymentController::class, 'store'])->name('pay.store');
 Route::get('/portal/{token}', [PortalController::class, 'show'])->name('portal.show');
+
+Route::match(['GET', 'POST'], '/iclock/cdata', [MachinePunchController::class, 'cdata'])->name('iclock.cdata');
+Route::match(['GET', 'POST'], '/iclock/getrequest', [MachinePunchController::class, 'getrequest'])->name('iclock.getrequest');
+Route::match(['GET', 'POST'], '/iclock/devicecmd', [MachinePunchController::class, 'getrequest'])->name('iclock.devicecmd');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -184,7 +194,31 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/receivables', [ReceivableController::class, 'index'])->name('receivables.index');
         Route::post('/receivables/{invoice}/remind', [ReceivableController::class, 'remind'])->name('receivables.remind');
     });
-    Route::middleware('module:employees')->resource('employees', EmployeeController::class)->except(['show']);
+    Route::middleware('module:employees')->resource('employees', EmployeeController::class);
+    Route::middleware('module:hr')->get('/hr', [HrController::class, 'index'])->name('hr.index');
+    Route::middleware('module:hr')->group(function () {
+        Route::get('/holidays', [HolidayController::class, 'index'])->name('holidays.index');
+        Route::post('/holidays', [HolidayController::class, 'store'])->name('holidays.store');
+        Route::delete('/holidays/{holiday}', [HolidayController::class, 'destroy'])->name('holidays.destroy');
+    });
+    Route::middleware('module:attendance')->group(function () {
+        Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+        Route::get('/attendance/punches', [AttendanceController::class, 'punches'])->name('attendance.punches');
+        Route::post('/attendance/rebuild', [AttendanceController::class, 'rebuild'])->name('attendance.rebuild');
+    });
+    Route::middleware('module:leave')->group(function () {
+        Route::get('/leave', [LeaveController::class, 'index'])->name('leave.index');
+        Route::get('/leave/mine', [LeaveController::class, 'mine'])->name('leave.mine');
+        Route::post('/leave', [LeaveController::class, 'store'])->name('leave.store');
+        Route::post('/leave/{leave}/approve', [LeaveController::class, 'approve'])->name('leave.approve');
+        Route::post('/leave/{leave}/reject', [LeaveController::class, 'reject'])->name('leave.reject');
+    });
+    Route::middleware('module:hr.devices')->group(function () {
+        Route::get('/devices', [AttendanceDeviceController::class, 'index'])->name('devices.index');
+        Route::post('/devices', [AttendanceDeviceController::class, 'store'])->name('devices.store');
+        Route::put('/devices/{device}', [AttendanceDeviceController::class, 'update'])->name('devices.update');
+        Route::delete('/devices/{device}', [AttendanceDeviceController::class, 'destroy'])->name('devices.destroy');
+    });
     Route::middleware('module:payroll')->group(function () {
         Route::get('/payroll', [PayrollController::class, 'index'])->name('payroll.index');
         Route::get('/payroll/create', [PayrollController::class, 'create'])->name('payroll.create');
@@ -226,7 +260,10 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('module:departments')->group(function () {
         Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index');
         Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
+        Route::get('/departments/{department}', [DepartmentController::class, 'show'])->name('departments.show');
         Route::put('/departments/{department}', [DepartmentController::class, 'update'])->name('departments.update');
+        Route::post('/departments/{department}/divisions', [DepartmentController::class, 'storeDivision'])->name('departments.divisions.store');
+        Route::post('/departments/{department}/positions', [DepartmentController::class, 'storePosition'])->name('departments.positions.store');
     });
 
     Route::middleware('module:budgets')->group(function () {

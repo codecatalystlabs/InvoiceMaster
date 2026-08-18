@@ -62,6 +62,14 @@ function status_badge(string $status): string
         'rejected' => 'danger',
         'Active' => 'success',
         'Inactive' => 'secondary',
+        'present' => 'success',
+        'late' => 'warning',
+        'absent' => 'danger',
+        'incomplete' => 'info',
+        'leave' => 'primary',
+        'weekend' => 'secondary',
+        'holiday' => 'secondary',
+        'overtime' => 'info',
         'debit' => 'success',
         'credit' => 'danger',
         'Income' => 'success',
@@ -71,6 +79,16 @@ function status_badge(string $status): string
     $class = $map[$status] ?? 'secondary';
 
     return '<span class="badge bg-'.$class.'">'.e($status).'</span>';
+}
+
+function minutes_label($minutes): string
+{
+    $minutes = (int) $minutes;
+    if ($minutes <= 0) {
+        return '—';
+    }
+
+    return sprintf('%d:%02d', intdiv($minutes, 60), $minutes % 60);
 }
 
 function can_module(string $module): bool

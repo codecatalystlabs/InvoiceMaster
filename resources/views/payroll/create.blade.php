@@ -7,7 +7,7 @@
     <div class="col-md-2"><button class="btn btn-secondary w-100">Preview</button></div>
 </form>
 <div class="card mb-3"><div class="table-responsive"><table class="table mb-0">
-<thead><tr><th>Employee</th><th class="text-end">Gross</th><th class="text-end">PAYE</th><th class="text-end">NSSF emp</th><th class="text-end">LST</th><th class="text-end">Canteen</th><th class="text-end">Net</th></tr></thead>
+<thead><tr><th>Employee</th><th class="text-end">Gross</th><th class="text-end">PAYE</th><th class="text-end">NSSF emp</th><th class="text-end">LST</th><th class="text-end">Canteen</th><th class="text-end">Other</th><th class="text-end">Net</th></tr></thead>
 <tbody>
 @foreach($preview['lines'] as $line)
 <tr>
@@ -17,6 +17,7 @@
     <td class="text-end">{{ money($line['nssf_employee']) }}</td>
     <td class="text-end">{{ money($line['lst']) }}</td>
     <td class="text-end">{{ money($line['canteen']) }}</td>
+    <td class="text-end">{{ money($line['other_deductions']) }}</td>
     <td class="text-end">{{ money($line['net']) }}</td>
 </tr>
 @endforeach
@@ -26,6 +27,7 @@
     <td class="text-end">{{ money($preview['totals']['nssf_employee']) }}</td>
     <td class="text-end">{{ money($preview['totals']['lst']) }}</td>
     <td class="text-end">{{ money($preview['totals']['canteen']) }}</td>
+    <td class="text-end">{{ money($preview['totals']['other_deductions']) }}</td>
     <td class="text-end">{{ money($preview['totals']['net']) }}</td>
 </tr>
 </tbody></table></div></div>
