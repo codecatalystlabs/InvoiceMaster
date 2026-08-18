@@ -1,77 +1,39 @@
-# Code Catalyst Labs - Quotation & Invoice Management System
+# Invoice Master (Laravel)
 
-A comprehensive web application for managing quotations and invoices built with PHP, MySQLi, and Bootstrap 5.
+Merged Laravel 12 app combining:
 
-## Features
+- **This repo’s original invoice system** — quotations, invoices, clients, expenses, assets, services, chart of accounts, ledger, financial reports, analytics, CSV export, audit logs, roles (Admin / Finance / Sales)
+- **InvoiceMaster / CodeCash** — company workspaces, receipts, running cash book (debit/credit + running balance, folio, discount), proforma invoices, company profile + logo, team invites, PDF + DOCX export
 
-- **Authentication System**: Role-based access control (Admin, Sales, Finance)
-- **Quotation Management**: Create, edit, delete, and send quotations
-- **Invoice Management**: Create invoices from quotations or standalone
-- **Client Management**: Manage client information
-- **Audit Logging**: Track all system actions
-- **PDF Generation**: Generate professional PDF documents
-- **Email Integration**: Send quotations and invoices via email
-- **Responsive Design**: Bootstrap 5 for mobile-friendly interface
+The previous PHP apps are kept under `legacy/` for reference.
 
-## Installation
+## Run locally (XAMPP)
 
-1. **Database Setup**
-   ```bash
-   Import database.sql into your MySQL server
-   ```
+1. MySQL database `invoice_master` is created automatically if you ran migrate.
+2. Open **http://localhost/invoice/public** (or http://localhost/invoice — root `.htaccess` rewrites to `public/`).
+3. Default login after `php artisan db:seed`:
+   - Email: `admin@codecatalystug.com`
+   - Password: `admin123`
 
-2. **Configuration**
-   - Edit `includes/config.php` with your database credentials
-   - Configure email settings in `includes/mailer.php`
+Or register a new company at `/register`.
 
-3. **Dependencies**
-   - Install Composer: [https://getcomposer.org/](https://getcomposer.org/)
-   - Run: `composer require phpmailer/phpmailer mpdf/mpdf`
+## Commands
 
-4. **Permissions**
-   - Ensure `pdf/` directory has write permissions
-
-## Default Login
-
-- **Username**: admin
-- **Password**: admin123
-- **Email**: admin@codecatalystlabs.com
-
-## Directory Structure
-
-```
-/assets         - CSS, JS, and images
-/includes       - Configuration and shared includes
-/auth           - Authentication pages
-/quotations     - Quotation management
-/invoices       - Invoice management
-/audit          - Audit logs
-/pdf            - Generated PDF files
+```bash
+composer install
+copy .env.example .env   # then set DB_* and APP_URL
+php artisan key:generate
+php artisan migrate --seed
+php artisan storage:link
 ```
 
-## Requirements
+## Main modules
 
-- PHP 7.4 or higher
-- MySQL 5.7 or higher
-- Apache/Nginx web server
-- Composer (for dependencies)
+| Area | Routes |
+|------|--------|
+| Sales | Invoices, Quotations (convert to invoice), Receipts, Clients |
+| Accounting | Cash book, Expenses, Assets, Services, Chart of accounts, Ledger |
+| Insights | Dashboard, Analytics (Chart.js), Financial report, CSV export |
+| Admin | Users, Company settings + invites, Audit log |
 
-## Security Features
-
-- Password hashing with bcrypt
-- Prepared statements (MySQLi)
-- Session-based authentication
-- Role-based access control
-- CSRF protection
-
-## Company Information
-
-**Code Catalyst Labs**
-- Email: info@codecatalystlabs.com
-- Phone: +1 (555) 123-4567
-- Address: 123 Innovation Drive, Tech City, TC 12345
-
-## License
-
-Proprietary - Code Catalyst Labs © 2025
-
+Documents: invoice/quotation/receipt **PDF** (DomPDF) and invoice **DOCX** (PHPWord).

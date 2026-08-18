@@ -1,0 +1,112 @@
+<?php
+
+return [
+    'roles' => [
+        'Admin' => ['*'],
+        'Finance' => [
+            'dashboard', 'canteen', 'canteen.review', 'canteen.catalog', 'canteen.close',
+            'requests', 'trail', 'invoices', 'quotations', 'receipts', 'clients', 'emails',
+            'cashbook', 'expenses', 'assets', 'services', 'accounts', 'ledger',
+            'analytics', 'reports', 'exports',
+            'departments', 'budgets', 'requisitions', 'requisitions.review', 'petty-cash',
+        ],
+        'Sales' => [
+            'dashboard', 'canteen', 'requests', 'invoices', 'quotations', 'receipts', 'clients', 'emails', 'exports',
+            'requisitions',
+        ],
+        'Reviewer' => [
+            'dashboard', 'canteen', 'canteen.review', 'canteen.catalog', 'canteen.close',
+            'requests', 'trail', 'requisitions', 'requisitions.review', 'petty-cash',
+        ],
+        'Staff' => [
+            'dashboard', 'canteen', 'requests', 'requisitions',
+        ],
+    ],
+
+    'catalog' => [
+        'dashboard' => 'Dashboard',
+        'canteen' => 'Canteen meals',
+        'canteen.review' => 'Meal review',
+        'canteen.catalog' => 'Food catalog',
+        'canteen.close' => 'Month close',
+        'requests' => 'Change requests',
+        'departments' => 'Departments',
+        'budgets' => 'Annual budgets',
+        'requisitions' => 'Requisitions',
+        'requisitions.review' => 'Requisition review',
+        'petty-cash' => 'Petty cash',
+        'trail' => 'Transaction trail',
+        'invoices' => 'Invoices',
+        'quotations' => 'Quotations',
+        'receipts' => 'Receipts',
+        'clients' => 'Clients',
+        'emails' => 'Emails',
+        'cashbook' => 'Cash book',
+        'expenses' => 'Expenses',
+        'assets' => 'Assets',
+        'services' => 'Services',
+        'accounts' => 'Chart of accounts',
+        'ledger' => 'Ledger',
+        'analytics' => 'Analytics',
+        'reports' => 'Reports',
+        'exports' => 'Exports',
+        'users' => 'Users',
+        'settings' => 'Settings',
+        'audit' => 'Audit log',
+    ],
+
+    'nav' => [
+        [
+            'label' => 'Workplace',
+            'items' => [
+                ['module' => 'canteen', 'label' => 'My meals', 'route' => 'canteen.index', 'icon' => 'bi-cup-hot', 'match' => ['canteen.index', 'canteen.show', 'canteen.request', 'canteen.request.store']],
+                ['module' => 'canteen.review', 'label' => 'Meal review', 'route' => 'canteen.review', 'icon' => 'bi-check2-square', 'badge' => 'review', 'match' => ['canteen.review', 'canteen.approve', 'canteen.refuse', 'canteen.bulk']],
+                ['module' => 'canteen.catalog', 'label' => 'Sources & food', 'route' => 'canteen.catalog', 'icon' => 'bi-egg-fried', 'match' => ['canteen.catalog', 'canteen.items.*']],
+                ['module' => 'canteen.close', 'label' => 'Month close', 'route' => 'canteen.month', 'icon' => 'bi-calendar-check', 'match' => ['canteen.month', 'canteen.month.close']],
+                ['module' => 'requests', 'label' => 'Change requests', 'route' => 'requests.index', 'icon' => 'bi-pencil-square', 'match' => ['requests.*']],
+            ],
+        ],
+        [
+            'label' => 'Funds',
+            'items' => [
+                ['module' => 'requisitions', 'label' => 'Requisitions', 'route' => 'requisitions.index', 'icon' => 'bi-clipboard-check', 'match' => ['requisitions.*']],
+                ['module' => 'petty-cash', 'label' => 'Petty cash', 'route' => 'petty-cash.index', 'icon' => 'bi-wallet2', 'match' => ['petty-cash.*']],
+                ['module' => 'budgets', 'label' => 'Budgets', 'route' => 'budgets.index', 'icon' => 'bi-pie-chart', 'match' => ['budgets.*']],
+                ['module' => 'departments', 'label' => 'Departments', 'route' => 'departments.index', 'icon' => 'bi-diagram-3', 'match' => ['departments.*']],
+            ],
+        ],
+        [
+            'label' => 'Sales',
+            'items' => [
+                ['module' => 'invoices', 'label' => 'Invoices', 'route' => 'invoices.index', 'icon' => 'bi-receipt', 'match' => ['invoices.*']],
+                ['module' => 'quotations', 'label' => 'Quotations', 'route' => 'quotations.index', 'icon' => 'bi-file-earmark-text', 'match' => ['quotations.*']],
+                ['module' => 'receipts', 'label' => 'Receipts', 'route' => 'receipts.index', 'icon' => 'bi-ticket-perforated', 'match' => ['receipts.*']],
+                ['module' => 'clients', 'label' => 'Clients', 'route' => 'clients.index', 'icon' => 'bi-people', 'match' => ['clients.*']],
+                ['module' => 'emails', 'label' => 'Emails', 'route' => 'emails.index', 'icon' => 'bi-envelope', 'badge' => 'emails', 'match' => ['emails.*']],
+            ],
+        ],
+        [
+            'label' => 'Records',
+            'items' => [
+                ['module' => 'cashbook', 'label' => 'Cash book', 'route' => 'cashbook.index', 'icon' => 'bi-cash-stack', 'match' => ['cashbook.*']],
+                ['module' => 'expenses', 'label' => 'Expenses', 'route' => 'expenses.index', 'icon' => 'bi-receipt-cutoff', 'match' => ['expenses.*']],
+                ['module' => 'assets', 'label' => 'Assets', 'route' => 'assets.index', 'icon' => 'bi-box-seam', 'match' => ['assets.*']],
+                ['module' => 'services', 'label' => 'Services', 'route' => 'services.index', 'icon' => 'bi-arrow-repeat', 'match' => ['services.*']],
+                ['module' => 'accounts', 'label' => 'Chart of Accounts', 'route' => 'accounts.index', 'icon' => 'bi-journal-text', 'match' => ['accounts.*']],
+                ['module' => 'ledger', 'label' => 'Ledger', 'route' => 'ledger.index', 'icon' => 'bi-book', 'match' => ['ledger.*']],
+                ['module' => 'analytics', 'label' => 'Analytics', 'route' => 'analytics', 'icon' => 'bi-bar-chart-line'],
+                ['module' => 'reports', 'label' => 'Reports', 'route' => 'reports.financial', 'icon' => 'bi-graph-up', 'match' => ['reports.*']],
+                ['module' => 'exports', 'label' => 'Export', 'route' => 'exports.index', 'icon' => 'bi-download', 'match' => ['exports.*']],
+                ['module' => 'trail', 'label' => 'Trail', 'route' => 'trail.index', 'icon' => 'bi-list-columns-reverse', 'match' => ['trail.*']],
+            ],
+        ],
+        [
+            'label' => 'Administration',
+            'items' => [
+                ['module' => 'users', 'label' => 'Users', 'route' => 'users.index', 'icon' => 'bi-people-fill', 'match' => ['users.*']],
+                ['module' => 'settings', 'label' => 'Settings', 'route' => 'settings.company', 'icon' => 'bi-gear', 'match' => ['settings.*']],
+                ['module' => 'audit', 'label' => 'Audit', 'route' => 'audit.index', 'icon' => 'bi-clock-history', 'match' => ['audit.*']],
+            ],
+        ],
+    ],
+];
