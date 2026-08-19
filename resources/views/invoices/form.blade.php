@@ -1,8 +1,8 @@
 @extends('layouts.app')
-@section('title', $invoice->exists ? 'Edit invoice' : 'New invoice')
+@section('title', $invoice->id ? 'Edit invoice' : 'New invoice')
 @section('content')
-<form method="POST" action="{{ $invoice->exists ? route('invoices.update', $invoice) : route('invoices.store') }}">
-@csrf @if($invoice->exists) @method('PUT') @endif
+<form method="POST" action="{{ $invoice->id ? route('invoices.update', $invoice) : route('invoices.store') }}">
+@csrf @if($invoice->id) @method('PUT') @endif
 <div class="row g-3">
 <div class="col-md-8">
 <div class="card mb-3"><div class="card-body">

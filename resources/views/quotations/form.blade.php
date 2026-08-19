@@ -1,8 +1,8 @@
 @extends('layouts.app')
-@section('title', $quotation->exists ? 'Edit quotation' : 'New quotation')
+@section('title', $quotation->id ? 'Edit quotation' : 'New quotation')
 @section('content')
-<form method="POST" action="{{ $quotation->exists ? route('quotations.update', $quotation) : route('quotations.store') }}">
-@csrf @if($quotation->exists) @method('PUT') @endif
+<form method="POST" action="{{ $quotation->id ? route('quotations.update', $quotation) : route('quotations.store') }}">
+@csrf @if($quotation->id) @method('PUT') @endif
 <div class="row g-3">
 <div class="col-md-8">
 <div class="card mb-3"><div class="card-body row g-3">

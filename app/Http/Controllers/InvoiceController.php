@@ -159,7 +159,7 @@ class InvoiceController extends Controller
 
         $calc = LineTotals::compute($request->items ?? [], (float) $request->tax_rate, (float) $request->discount);
         $client = $request->client_id ? Client::find($request->client_id) : null;
-        $isNew = ! $invoice->exists;
+        $isNew = ! $invoice->getKey();
 
         $invoice->fill([
             'client_id' => $request->client_id ?: null,
@@ -186,7 +186,7 @@ class InvoiceController extends Controller
         $invoice->items()->delete();
         foreach ($calc['items'] as $item) {
             $invoice->items()->create([
-                'item_name' => $item['name'],
+                'item_name' => $item['item_name'] ?? $item['name'],
                 'qty' => $item['qty'],
                 'unit_price' => $item['unit_price'],
                 'total' => $item['total'],

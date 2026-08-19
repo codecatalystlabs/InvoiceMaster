@@ -159,7 +159,7 @@ class QuotationController extends Controller
         ]);
 
         $calc = LineTotals::compute($request->items ?? [], (float) $request->tax_rate, (float) $request->discount);
-        $isNew = ! $quotation->exists;
+        $isNew = ! $quotation->getKey();
         $quotation->fill([
             'client_id' => $request->client_id,
             'date' => $request->date,
@@ -177,7 +177,7 @@ class QuotationController extends Controller
         $quotation->items()->delete();
         foreach ($calc['items'] as $item) {
             $quotation->items()->create([
-                'item_name' => $item['name'],
+                'item_name' => $item['item_name'] ?? $item['name'],
                 'qty' => $item['qty'],
                 'unit_price' => $item['unit_price'],
                 'total' => $item['total'],
